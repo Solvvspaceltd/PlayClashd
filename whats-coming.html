@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's coming to Clashd — the roadmap</title><meta name="description" content="The Clashd roadmap: 1v1 Battles, knockout cups, web leaderboards, FPL insights, mini-leagues for friends, and a full account portal. Built to grow."><link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"></head><body>
+<nav><div class="wrap">
+  <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
+  <div class="nav-links">
+    <a href="how-it-works.html">How it works</a>
+    <a href="leagues.html">Leagues</a>
+    <a href="one-v-one.html">1v1 Battles</a>
+    <a href="whats-coming.html" class="active">What's coming</a>
+    <a href="index.html#invite" class="nav-cta">Request invite</a>
+  </div>
+</div></nav>
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">The roadmap</div>
+    <h1>Built to grow</h1>
+    <p class="lead">Clashd is launching lean and honest — a tight app that does one thing well. Here's what's live today and the order we're building the rest. No vapourware, just the plan.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="grid-4">
+      <div class="card"><span class="tag tag-live">Live</span><h4 style="margin-top:12px">The app</h4><p>iOS &amp; Android. Link FPL, join leagues, live leaderboards, invite-only.</p></div>
+      <div class="card"><span class="tag tag-soon">Next</span><h4 style="margin-top:12px">1v1 Battles</h4><p>Head-to-head duels over a gameweek. Admin-created first, then self-serve.</p></div>
+      <div class="card"><span class="tag tag-soon">Next</span><h4 style="margin-top:12px">Web leaderboards</h4><p>Check standings from any browser, no app needed.</p></div>
+      <div class="card"><span class="tag tag-soon">Later</span><h4 style="margin-top:12px">Account portal</h4><p>Manage your profile, leagues, and prize history on the web.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--elevated)">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow">In order</div>
+      <h2 class="section-title">The build sequence</h2>
+      <p class="section-lead">Roughly the order we'll ship things. Player demand can reshuffle it — that's the point of starting small.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-phase">Shipped</div>
+        <h3>The Clashd app &amp; season leagues</h3>
+        <p>The core product: link your FPL team, join seven cash-prize competitions, and follow live leaderboards. Invite-only, capped at 100 managers. This is live now.</p>
+      </div>
+      <div class="tl-item soon">
+        <div class="tl-phase">Next up</div>
+        <h3>1v1 Battles</h3>
+        <p>Head-to-head competition, rolled out in phases starting with admin-created battles. The signature next feature — <a href="one-v-one.html" class="accent">see the full plan</a>.</p>
+      </div>
+      <div class="tl-item soon">
+        <div class="tl-phase">Next up</div>
+        <h3>Web leaderboards</h3>
+        <p>A public web view of live standings so members and prospective players can follow the action without opening the app. Doubles as a shop window for the platform.</p>
+      </div>
+      <div class="tl-item soon">
+        <div class="tl-phase">On the horizon</div>
+        <h3>FPL insights &amp; content</h3>
+        <p>Gameweek reads, differentials, and tips — content that sharpens your edge and pulls new managers to Clashd through search.</p>
+      </div>
+      <div class="tl-item soon">
+        <div class="tl-phase">On the horizon</div>
+        <h3>Mini-leagues for friends</h3>
+        <p>Let members spin up private leagues for their own group of mates, within the same trusted, capped ecosystem.</p>
+      </div>
+      <div class="tl-item soon">
+        <div class="tl-phase">Further out</div>
+        <h3>Knockout cups &amp; account portal</h3>
+        <p>Bracket tournaments born from 1v1 Battles, plus a full web portal for managing your profile, leagues, and prize history in one place.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap center">
+    <div class="invite-card">
+      <div class="eyebrow">Grow with us</div>
+      <h2>Get in at the start</h2>
+      <p>Early members shape what gets built next. Request your invite and help steer the roadmap.</p>
+      <form class="invite-form" onsubmit="return sendInvite(event)">
+        <input type="email" id="email" placeholder="you@email.com" required>
+        <button type="submit">Request invite</button>
+      </form>
+      <p class="invite-note">18+ only. Please play responsibly.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+function sendInvite(e){
+  e.preventDefault();
+  var email=document.getElementById('email').value.trim();
+  if(!email) return false;
+  var s=encodeURIComponent('Clashd Invite Request');
+  var b=encodeURIComponent('Hello,\n\nI would like to request an invite to Clashd for the 2026/27 season.\n\nMy email: '+email+'\n\nThanks.');
+  window.location.href='mailto:admin@solvvspace.com?subject='+s+'&body='+b;
+  return false;
+}
+</script>
+<footer><div class="wrap">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
+      <p>Competitive Fantasy Premier League. Your points, real prizes.</p>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col"><h5>Product</h5>
+        <a href="how-it-works.html">How it works</a>
+        <a href="leagues.html">Leagues</a>
+        <a href="one-v-one.html">1v1 Battles</a>
+        <a href="whats-coming.html">What's coming</a>
+      </div>
+      <div class="foot-col"><h5>Legal</h5>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="mailto:admin@solvvspace.com">Contact</a>
+      </div>
+      <div class="foot-col"><h5>Company</h5>
+        <a href="https://solvvspace.com">SolvvSpace Ltd</a>
+        <a href="mailto:admin@solvvspace.com">Support</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom"><div>© 2026 SolvvSpace Ltd · Clashd</div><div>Bedford, England</div></div>
+  <p class="disclaimer">Clashd is a skill-based fantasy competition for users aged 18 and over. Clashd is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League. All FPL data remains the property of the Premier League. Please play responsibly.</p>
+</div></footer>
+</body></html>

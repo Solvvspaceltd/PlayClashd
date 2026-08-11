@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clashd — Fantasy football, real stakes</title>
+<meta name="description" content="Clashd turns your Fantasy Premier League season into a real competition. Link your FPL team, join invite-only leagues, and compete for cash prizes.">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav><div class="wrap">
+  <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
+  <div class="nav-links">
+    <a href="how-it-works.html">How it works</a>
+    <a href="leagues.html">Leagues</a>
+    <a href="one-v-one.html">1v1 Battles</a>
+    <a href="whats-coming.html">What's coming</a>
+    <a href="index.html#invite" class="nav-cta">Request invite</a>
+  </div>
+</div></nav>
+<header class="page-hero center" style="padding-top:96px">
+  <div class="wrap">
+    <span class="eyebrow">Invite-only · Season 2026/27</span>
+    <h1>Fantasy football,<br><span class="accent">real stakes.</span></h1>
+    <p class="lead" style="margin:0 auto 36px">Clashd turns your Fantasy Premier League season into a real competition. Link your FPL team once, join your leagues, and play for cash prizes — all season long.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="#invite" class="btn-primary">Request an invite</a>
+      <a href="how-it-works.html" class="btn-ghost">See how it works</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap center">
+    <div class="eyebrow">How it works</div>
+    <h2 class="section-title">Play FPL as you always do</h2>
+    <p class="section-lead">No second team to manage. Clashd runs on your official FPL score.</p>
+    <div class="grid-3" style="text-align:left;margin-top:48px">
+      <div class="card"><div class="step-num">1</div><h3>Link your team</h3><p>Connect your official FPL Manager ID once. Takes about thirty seconds.</p></div>
+      <div class="card"><div class="step-num">2</div><h3>Join your leagues</h3><p>Use the invite code from your admin to enter cash-prize leagues.</p></div>
+      <div class="card"><div class="step-num">3</div><h3>Climb and win</h3><p>Your points sync automatically every gameweek. Compete for the pot.</p></div>
+    </div>
+    <div style="margin-top:36px"><a href="how-it-works.html" class="btn-ghost">Full walkthrough</a></div>
+  </div>
+</section>
+
+<section style="background:var(--elevated)">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow">The competitions</div>
+      <h2 class="section-title">Seven ways to win</h2>
+      <p class="section-lead">One season, many prizes. Every style of manager has a shot.</p>
+    </div>
+    <div class="grid-2" style="margin-top:48px">
+      <div class="league"><div class="league-head"><div><span class="tag tag-season">Season</span><h3>Clashd Season</h3><p>All 38 gameweeks. Highest cumulative FPL score wins.</p></div><div class="prize">£500·£200·£100</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-weekly">Weekly</span><h3>Weekly Battle</h3><p>A fresh competition every gameweek.</p></div><div class="prize">£50</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-bonus">Bonus</span><h3>Captain Royale</h3><p>Best cumulative captain points all season.</p></div><div class="prize">£75</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-private">Private</span><h3>Elite Top 10</h3><p>Invite-only league for the platform's best.</p></div><div class="prize">£100·£40·£10</div></div></div>
+    </div>
+    <div class="center" style="margin-top:32px"><a href="leagues.html" class="btn-ghost">See all seven leagues</a></div>
+    <div class="banner">
+      <div><div class="big gold">£1,000+</div><p>in prizes across the 2026/27 season</p></div>
+      <div style="text-align:right"><div class="big">100</div><p>managers · invite-only community</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <div class="eyebrow">Coming soon</div>
+        <h2>1v1 Battles</h2>
+        <p>Go head-to-head with another manager over a single gameweek. Highest score wins the pot. Personal rivalry, settled on the pitch.</p>
+        <p>The purest form of competition on Clashd — pick your rival, set the stakes, and let the gameweek decide.</p>
+        <div style="margin-top:24px"><a href="one-v-one.html" class="btn-ghost">Explore 1v1 Battles</a></div>
+      </div>
+      <div class="split-visual">
+        <div class="vs">
+          <div class="mgr win"><div class="av">A</div><div class="name">You</div><div class="score">78</div></div>
+          <div class="versus">VS</div>
+          <div class="mgr"><div class="av">R</div><div class="name">Rival</div><div class="score">64</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="invite">
+  <div class="wrap">
+    <div class="invite-card">
+      <div class="eyebrow">Get in</div>
+      <h2>Request your invite</h2>
+      <p>Clashd is invite-only and capped at 100 managers for the season. Drop your email and we'll be in touch with your code.</p>
+      <form class="invite-form" onsubmit="return sendInvite(event)">
+        <input type="email" id="email" placeholder="you@email.com" required>
+        <button type="submit">Request invite</button>
+      </form>
+      <p class="invite-note">18+ only. Clashd is a skill-based platform. Please play responsibly.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+function sendInvite(e){
+  e.preventDefault();
+  var email=document.getElementById('email').value.trim();
+  if(!email) return false;
+  var s=encodeURIComponent('Clashd Invite Request');
+  var b=encodeURIComponent('Hello,\n\nI would like to request an invite to Clashd for the 2026/27 season.\n\nMy email: '+email+'\n\nThanks.');
+  window.location.href='mailto:admin@solvvspace.com?subject='+s+'&body='+b;
+  return false;
+}
+</script>
+<footer><div class="wrap">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
+      <p>Competitive Fantasy Premier League. Your points, real prizes.</p>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col"><h5>Product</h5>
+        <a href="how-it-works.html">How it works</a>
+        <a href="leagues.html">Leagues</a>
+        <a href="one-v-one.html">1v1 Battles</a>
+        <a href="whats-coming.html">What's coming</a>
+      </div>
+      <div class="foot-col"><h5>Legal</h5>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="mailto:admin@solvvspace.com">Contact</a>
+      </div>
+      <div class="foot-col"><h5>Company</h5>
+        <a href="https://solvvspace.com">SolvvSpace Ltd</a>
+        <a href="mailto:admin@solvvspace.com">Support</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom"><div>© 2026 SolvvSpace Ltd · Clashd</div><div>Bedford, England</div></div>
+  <p class="disclaimer">Clashd is a skill-based fantasy competition for users aged 18 and over. Clashd is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League. All FPL data remains the property of the Premier League. Please play responsibly.</p>
+</div></footer>
+</body></html>

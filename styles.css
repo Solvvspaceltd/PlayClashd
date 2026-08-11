@@ -1,0 +1,190 @@
+/* ============================================================
+   Clashd — shared stylesheet (playclashd.com)
+   One source of truth for every page.
+   ============================================================ */
+:root {
+  --green:#0E9F4F; --green-bright:#12D95E; --green-deep:#0A5F30;
+  --bg:#070C08; --card:#0E140E; --elevated:#141D14; --border:#1C2919;
+  --ink:#FFFFFF; --muted:#8DA88A; --dim:#4E6349; --gold:#E8B22E;
+  --purple:#9d95ff; --orange:#f0865e;
+  --maxw:1080px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Inter',-apple-system,sans-serif; background:var(--bg);
+  color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,h4,.display { font-family:'Sora',sans-serif; letter-spacing:-0.02em; }
+a { color:inherit; text-decoration:none; }
+.wrap { max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+.accent { color:var(--green-bright); }
+.gold { color:var(--gold); }
+.center { text-align:center; }
+
+/* ---- Nav ---- */
+nav {
+  position:sticky; top:0; z-index:50; backdrop-filter:blur(12px);
+  background:rgba(7,12,8,0.82); border-bottom:1px solid var(--border);
+}
+nav .wrap { display:flex; align-items:center; justify-content:space-between; height:68px; }
+.brand { display:flex; align-items:center; gap:11px; font-family:'Sora'; font-weight:800; font-size:20px; }
+.brand img { width:34px; height:34px; border-radius:9px; }
+.brand .d { color:var(--green-bright); }
+.nav-links { display:flex; gap:28px; align-items:center; }
+.nav-links a { color:var(--muted); font-size:14px; font-weight:500; transition:color .2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--ink); }
+.nav-cta {
+  background:var(--green); color:#fff !important; padding:9px 18px; border-radius:10px;
+  font-weight:600; font-size:14px; transition:background .2s;
+}
+.nav-cta:hover { background:var(--green-bright); color:#04120a !important; }
+@media(max-width:820px){ .nav-links a:not(.nav-cta){ display:none; } }
+
+/* ---- Buttons ---- */
+.btn-primary {
+  display:inline-block; background:var(--green); color:#fff; padding:15px 30px; border-radius:13px;
+  font-weight:700; font-size:16px; font-family:'Sora'; transition:all .2s;
+  box-shadow:0 8px 30px rgba(14,159,79,0.32); border:none; cursor:pointer;
+}
+.btn-primary:hover { background:var(--green-bright); color:#04120a; transform:translateY(-2px); }
+.btn-ghost {
+  display:inline-block; background:transparent; color:var(--ink); padding:15px 30px; border-radius:13px;
+  font-weight:600; font-size:16px; border:1px solid var(--border); transition:all .2s;
+}
+.btn-ghost:hover { border-color:var(--green); color:var(--green-bright); }
+
+/* ---- Page hero (inner pages) ---- */
+.page-hero { position:relative; padding:80px 0 40px; overflow:hidden; }
+.page-hero::before {
+  content:''; position:absolute; top:-50%; left:50%; transform:translateX(-50%);
+  width:820px; height:820px; border-radius:50%;
+  background:radial-gradient(circle, rgba(18,217,94,0.10), transparent 62%); pointer-events:none;
+}
+.eyebrow { color:var(--green-bright); font-size:13px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; }
+.page-hero h1 { font-size:clamp(34px,6vw,56px); font-weight:800; line-height:1.05; margin-bottom:18px; position:relative; }
+.page-hero p.lead { font-size:clamp(16px,2.2vw,20px); color:var(--muted); max-width:640px; position:relative; }
+
+/* ---- Sections ---- */
+section { padding:56px 0; }
+.section-title { font-size:clamp(26px,4.2vw,40px); font-weight:700; margin-bottom:14px; }
+.section-lead { color:var(--muted); font-size:17px; max-width:620px; }
+.center .section-lead { margin:0 auto; }
+
+/* ---- Cards / grids ---- */
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media(max-width:820px){ .grid-3,.grid-4{ grid-template-columns:1fr; } .grid-2{ grid-template-columns:1fr; } }
+
+.card {
+  background:var(--card); border:1px solid var(--border); border-radius:18px; padding:28px;
+  transition:border-color .2s, transform .2s;
+}
+.card:hover { border-color:var(--green); transform:translateY(-3px); }
+.card h3 { font-size:19px; margin-bottom:9px; }
+.card p { color:var(--muted); font-size:15px; }
+
+.step-num { font-family:'Sora'; font-weight:800; font-size:15px; color:var(--green-deep);
+  background:var(--green-bright); width:34px; height:34px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+
+/* ---- League cards ---- */
+.league {
+  background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px;
+  transition:border-color .2s;
+}
+.league:hover { border-color:var(--green); }
+.league-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.league h3 { font-size:18px; margin-bottom:6px; }
+.league .prize { color:var(--gold); font-weight:700; font-family:'Sora'; font-size:15px; white-space:nowrap; text-align:right; }
+.league .guide { color:var(--muted); font-size:14px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.05em;
+  text-transform:uppercase; padding:3px 9px; border-radius:6px; margin-bottom:12px; }
+.tag-season { background:rgba(14,159,79,0.15); color:var(--green-bright); }
+.tag-weekly { background:rgba(83,74,183,0.18); color:var(--purple); }
+.tag-bonus { background:rgba(232,178,46,0.14); color:var(--gold); }
+.tag-private { background:rgba(216,90,48,0.15); color:var(--orange); }
+.tag-soon { background:rgba(232,178,46,0.14); color:var(--gold); }
+.tag-live { background:rgba(14,159,79,0.16); color:var(--green-bright); }
+
+/* ---- Banner ---- */
+.banner {
+  background:linear-gradient(135deg, var(--green-deep), #063a1e);
+  border:1px solid var(--green); border-radius:22px; padding:44px; margin-top:40px;
+  display:flex; align-items:center; justify-content:space-between; gap:30px; flex-wrap:wrap;
+}
+.banner .big { font-family:'Sora'; font-weight:800; font-size:clamp(30px,5vw,50px); }
+.banner p { color:#bfe6cd; margin-top:6px; }
+
+/* ---- Invite ---- */
+.invite-card {
+  background:var(--card); border:1px solid var(--border); border-radius:22px;
+  padding:48px; text-align:center; max-width:640px; margin:0 auto;
+}
+.invite-card h2 { font-size:clamp(26px,4vw,36px); margin-bottom:14px; }
+.invite-card p { color:var(--muted); margin-bottom:30px; }
+.invite-form { display:flex; gap:12px; max-width:440px; margin:0 auto; flex-wrap:wrap; }
+.invite-form input {
+  flex:1; min-width:200px; background:var(--bg); border:1px solid var(--border);
+  border-radius:12px; padding:15px 16px; color:var(--ink); font-size:15px; font-family:'Inter';
+}
+.invite-form input:focus { outline:none; border-color:var(--green); }
+.invite-form button {
+  background:var(--green); color:#fff; border:none; padding:15px 26px; border-radius:12px;
+  font-weight:700; font-size:15px; font-family:'Sora'; cursor:pointer; transition:background .2s;
+}
+.invite-form button:hover { background:var(--green-bright); color:#04120a; }
+.invite-note { font-size:12px; color:var(--dim); margin-top:18px; }
+
+/* ---- Timeline (roadmap) ---- */
+.timeline { position:relative; margin-top:48px; padding-left:28px; }
+.timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:2px; background:var(--border); }
+.tl-item { position:relative; margin-bottom:34px; }
+.tl-item::before { content:''; position:absolute; left:-28px; top:5px; width:16px; height:16px;
+  border-radius:50%; background:var(--bg); border:3px solid var(--green); }
+.tl-item.soon::before { border-color:var(--gold); }
+.tl-phase { font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--green-bright); margin-bottom:4px; }
+.tl-item.soon .tl-phase { color:var(--gold); }
+.tl-item h3 { font-size:20px; margin-bottom:6px; }
+.tl-item p { color:var(--muted); font-size:15px; max-width:640px; }
+
+/* ---- Feature split ---- */
+.split { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; margin-top:40px; }
+@media(max-width:820px){ .split{ grid-template-columns:1fr; } }
+.split h2 { font-size:clamp(26px,4vw,38px); margin-bottom:16px; }
+.split p { color:var(--muted); font-size:16px; margin-bottom:14px; }
+.split ul { list-style:none; margin-top:20px; }
+.split li { color:var(--muted); font-size:15px; padding-left:28px; position:relative; margin-bottom:12px; }
+.split li::before { content:'✓'; position:absolute; left:0; color:var(--green-bright); font-weight:700; }
+.split-visual {
+  background:linear-gradient(135deg, var(--elevated), var(--card));
+  border:1px solid var(--border); border-radius:22px; padding:40px; min-height:320px;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ---- Versus card (1v1 visual) ---- */
+.vs { display:flex; align-items:center; gap:18px; width:100%; }
+.vs .mgr { flex:1; text-align:center; }
+.vs .mgr .av { width:64px; height:64px; border-radius:50%; margin:0 auto 12px;
+  background:var(--green-deep); border:2px solid var(--green); display:flex; align-items:center;
+  justify-content:center; font-family:'Sora'; font-weight:800; font-size:24px; }
+.vs .mgr .name { font-weight:600; font-size:15px; }
+.vs .mgr .score { font-family:'Sora'; font-weight:800; font-size:32px; margin-top:6px; }
+.vs .versus { font-family:'Sora'; font-weight:800; font-size:22px; color:var(--gold); }
+.vs .mgr.win .av { border-color:var(--gold); box-shadow:0 0 20px rgba(232,178,46,0.35); }
+.vs .mgr.win .score { color:var(--gold); }
+
+/* ---- Footer ---- */
+footer { border-top:1px solid var(--border); padding:52px 0 40px; margin-top:40px; }
+.foot-grid { display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; margin-bottom:36px; }
+.foot-brand { max-width:300px; }
+.foot-brand .brand { margin-bottom:14px; }
+.foot-brand p { color:var(--muted); font-size:14px; }
+.foot-links { display:flex; gap:56px; flex-wrap:wrap; }
+.foot-col h5 { font-size:13px; font-weight:700; color:var(--ink); margin-bottom:14px; letter-spacing:0.04em; }
+.foot-col a { display:block; color:var(--muted); font-size:14px; margin-bottom:10px; transition:color .2s; }
+.foot-col a:hover { color:var(--green-bright); }
+.foot-bottom { border-top:1px solid var(--border); padding-top:24px; display:flex;
+  justify-content:space-between; gap:16px; flex-wrap:wrap; color:var(--dim); font-size:13px; }
+.disclaimer { font-size:12px; color:var(--dim); max-width:660px; line-height:1.6; margin-top:8px; }

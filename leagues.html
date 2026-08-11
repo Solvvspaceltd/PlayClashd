@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clashd Leagues — seven ways to win</title><meta name="description" content="Seven Clashd competitions for the 2026/27 FPL season: Season, Weekly Battle, Captain Royale, No Hit Squad, Transfer Genius, Green Arrow, and the invite-only Elite Top 10."><link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"></head><body>
+<nav><div class="wrap">
+  <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
+  <div class="nav-links">
+    <a href="how-it-works.html">How it works</a>
+    <a href="leagues.html" class="active">Leagues</a>
+    <a href="one-v-one.html">1v1 Battles</a>
+    <a href="whats-coming.html">What's coming</a>
+    <a href="index.html#invite" class="nav-cta">Request invite</a>
+  </div>
+</div></nav>
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">The competitions</div>
+    <h1>Seven ways to win</h1>
+    <p class="lead">One FPL season, many prizes. Whether you're a set-and-forget manager or a transfer tactician, there's a competition built for how you play. Over £1,000 in prizes across the 2026/27 season.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="grid-2">
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-season">Season</span><h3>Clashd Season</h3><p>The main event across all 38 gameweeks of the Premier League season.</p></div>
+          <div class="prize">£500 · £200 · £100</div>
+        </div>
+        <div class="guide">Your cumulative FPL score from GW1 to GW38 determines your final rank. No transfers or changes needed inside Clashd — manage your FPL team as normal and scores update automatically. Highest total at GW38 wins.</div>
+      </div>
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-weekly">Weekly</span><h3>Weekly Battle</h3><p>Every gameweek is a fresh competition. Highest single-GW score wins the pot.</p></div>
+          <div class="prize">£50 winner takes all</div>
+        </div>
+        <div class="guide">Points hits are deducted as per your official FPL score. Chips count. Results confirmed once the FPL API marks the gameweek final, usually a few hours after the last match.</div>
+      </div>
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-bonus">Bonus</span><h3>Captain Royale</h3><p>The manager with the highest cumulative captain points across the season wins.</p></div>
+          <div class="prize">£75 season prize</div>
+        </div>
+        <div class="guide">Your captain choice is pulled directly from your FPL team each gameweek. Triple Captain counts double. No input needed — just pick wisely. Winner announced at GW38.</div>
+      </div>
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-bonus">Bonus</span><h3>No Hit Squad</h3><p>Finish the entire season without taking a single points hit.</p></div>
+          <div class="prize">£25 each for qualifiers</div>
+        </div>
+        <div class="guide">A hit is any transfer beyond your free transfer(s) in a gameweek. Wildcard and Free Hit don't count as hits. One hit across the season eliminates you. The pot is split equally between everyone who finishes hit-free.</div>
+      </div>
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-bonus">Bonus</span><h3>Transfer Genius</h3><p>The manager whose transfers gained the most net points across the season wins.</p></div>
+          <div class="prize">£50 season prize</div>
+        </div>
+        <div class="guide">Transfer gain = points scored by players brought in minus those moved out, on the gameweek of each transfer. Calculated automatically from your FPL history. Highest cumulative gain at GW38 wins.</div>
+      </div>
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-bonus">Bonus</span><h3>Green Arrow</h3><p>The manager who improves their overall FPL rank the most times across the season wins.</p></div>
+          <div class="prize">£50 season prize</div>
+        </div>
+        <div class="guide">A green arrow means your overall rank improved after a gameweek. We count how many you collect across the season. Most rank improvements at GW38 wins — consistency beats one big score.</div>
+      </div>
+      <div class="league">
+        <div class="league-head">
+          <div><span class="tag tag-private">Private</span><h3>Elite Top 10</h3><p>An invite-only private league for the top 10 ranked managers on the platform.</p></div>
+          <div class="prize">£100 · £40 · £10</div>
+        </div>
+        <div class="guide">Seeded at the start of the season based on previous performance. Same scoring rules as the main Season league. Final standings at GW38 decide prize distribution.</div>
+      </div>
+    </div>
+    <div class="banner">
+      <div><div class="big gold">£1,000+</div><p>in prizes across the season</p></div>
+      <div style="text-align:right"><div class="big">7</div><p>competitions · one linked FPL team</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--elevated)">
+  <div class="wrap center">
+    <div class="invite-card">
+      <div class="eyebrow">Get in</div>
+      <h2>Request your invite</h2>
+      <p>Join all seven with one linked FPL team. Capped at 100 managers.</p>
+      <form class="invite-form" onsubmit="return sendInvite(event)">
+        <input type="email" id="email" placeholder="you@email.com" required>
+        <button type="submit">Request invite</button>
+      </form>
+      <p class="invite-note">18+ only. Please play responsibly.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+function sendInvite(e){
+  e.preventDefault();
+  var email=document.getElementById('email').value.trim();
+  if(!email) return false;
+  var s=encodeURIComponent('Clashd Invite Request');
+  var b=encodeURIComponent('Hello,\n\nI would like to request an invite to Clashd for the 2026/27 season.\n\nMy email: '+email+'\n\nThanks.');
+  window.location.href='mailto:admin@solvvspace.com?subject='+s+'&body='+b;
+  return false;
+}
+</script>
+<footer><div class="wrap">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
+      <p>Competitive Fantasy Premier League. Your points, real prizes.</p>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col"><h5>Product</h5>
+        <a href="how-it-works.html">How it works</a>
+        <a href="leagues.html">Leagues</a>
+        <a href="one-v-one.html">1v1 Battles</a>
+        <a href="whats-coming.html">What's coming</a>
+      </div>
+      <div class="foot-col"><h5>Legal</h5>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="mailto:admin@solvvspace.com">Contact</a>
+      </div>
+      <div class="foot-col"><h5>Company</h5>
+        <a href="https://solvvspace.com">SolvvSpace Ltd</a>
+        <a href="mailto:admin@solvvspace.com">Support</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom"><div>© 2026 SolvvSpace Ltd · Clashd</div><div>Bedford, England</div></div>
+  <p class="disclaimer">Clashd is a skill-based fantasy competition for users aged 18 and over. Clashd is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League. All FPL data remains the property of the Premier League. Please play responsibly.</p>
+</div></footer>
+</body></html>
