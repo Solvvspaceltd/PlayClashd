@@ -107,6 +107,7 @@ section { padding:56px 0; }
 .tag-private { background:rgba(216,90,48,0.15); color:var(--orange); }
 .tag-soon { background:rgba(232,178,46,0.14); color:var(--gold); }
 .tag-live { background:rgba(14,159,79,0.16); color:var(--green-bright); }
+.tag-aside { background:rgba(232,178,46,0.18); color:var(--gold); }
 
 /* ---- Banner ---- */
 .banner {
@@ -188,3 +189,20 @@ footer { border-top:1px solid var(--border); padding:52px 0 40px; margin-top:40p
 .foot-bottom { border-top:1px solid var(--border); padding-top:24px; display:flex;
   justify-content:space-between; gap:16px; flex-wrap:wrap; color:var(--dim); font-size:13px; }
 .disclaimer { font-size:12px; color:var(--dim); max-width:660px; line-height:1.6; margin-top:8px; }
+
+/* Pricing tiers */
+.tiers { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:44px; }
+.tier { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px 20px; text-align:center; transition:border-color .2s, transform .2s; display:flex; flex-direction:column; }
+.tier:hover { border-color:var(--green); transform:translateY(-3px); }
+.tier.featured { border-color:var(--green); background:rgba(14,159,79,0.07); }
+.tier .tier-name { min-height:20px; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--green-bright); margin-bottom:14px; }
+.tier .tier-price { font-family:'Sora'; font-weight:800; font-size:40px; color:var(--gold); line-height:1; }
+.tier .tier-each { color:var(--dim); font-size:13px; margin-top:8px; }
+.tier .tier-desc { color:var(--muted); font-size:14px; margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
+.tier-flag { display:block; width:fit-content; margin-left:auto; margin-right:auto; background:rgba(14,159,79,0.16); color:var(--green-bright); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 10px; border-radius:20px; margin-bottom:10px; }
+.split-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
+.split-row:last-child { border-bottom:none; }
+.split-row .lbl { color:var(--muted); font-size:15px; }
+.split-row .val { font-family:'Sora'; font-weight:700; font-size:16px; }
+@media(max-width:860px){ .tiers { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .tiers { grid-template-columns:1fr; } }
