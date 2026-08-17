@@ -3,14 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clashd: Fantasy football, real stakes</title>
-<meta name="description" content="Clashd turns your Fantasy Premier League season into a real competition. Link your FPL team, join invite-only leagues, and compete on skill for cash prizes.">
+<title>Clashd: Free to enter, real prizes</title>
+<meta name="description" content="Clashd turns your Fantasy Premier League season into a real competition. Free to enter, invite-only, with cash prizes decided by your FPL points.">
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>.tag-aside { background:rgba(232,178,46,0.18); color:var(--gold,#E8B22E); }</style>
+<style>
+/* Mobile nav: links wrap to a scrollable second row instead of being hidden. */
+@media(max-width:820px){
+  nav .wrap { flex-wrap:wrap; row-gap:12px; position:relative; }
+  .nav-links { width:100%; gap:18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+  .nav-links::-webkit-scrollbar { display:none; }
+  .nav-links a { font-size:13px; white-space:nowrap; flex:0 0 auto; display:inline-block; }
+  .nav-links a.nav-cta { position:absolute; top:0; right:0; padding:8px 14px; font-size:13px; }
+}
+</style>
 </head>
 <body>
 <nav><div class="wrap">
@@ -18,7 +28,7 @@
   <div class="nav-links">
     <a href="how-it-works.html">How it works</a>
     <a href="leagues.html">Leagues</a>
-    <a href="pricing.html">Pricing</a>
+    <a href="pricing.html">Prizes</a>
     <a href="one-v-one.html">1v1 Battles</a>
     <a href="whats-coming.html">What's coming</a>
     <a href="index.html#invite" class="nav-cta">Request invite</a>
@@ -27,8 +37,8 @@
 <header class="page-hero center" style="padding-top:96px">
   <div class="wrap">
     <span class="eyebrow">Invite-only · Season 2026/27</span>
-    <h1>Fantasy football,<br><span class="accent">real stakes.</span></h1>
-    <p class="lead" style="margin:0 auto 36px">Clashd turns your Fantasy Premier League season into a real competition. Link your FPL team once, join your leagues, and compete on your FPL points for cash prizes, all season long.</p>
+    <h1>Free to enter.<br><span class="accent">Real prizes.</span></h1>
+    <p class="lead" style="margin:0 auto 36px">Clashd turns your Fantasy Premier League season into a real competition. Link your FPL team once, join your leagues, and compete on your FPL points for cash prizes. No entry fee, no stake, nothing to lose.</p>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
       <a href="#invite" class="btn-primary">Request an invite</a>
       <a href="how-it-works.html" class="btn-ghost">See how it works</a>
@@ -43,7 +53,7 @@
     <p class="section-lead">No second team to manage. Clashd runs on your official FPL score.</p>
     <div class="grid-3" style="text-align:left;margin-top:48px">
       <div class="card"><div class="step-num">1</div><h3>Link your team</h3><p>Connect your official FPL Manager ID once. Takes about thirty seconds.</p></div>
-      <div class="card"><div class="step-num">2</div><h3>Join your leagues</h3><p>Use the invite code from your admin to enter skill-based prize leagues.</p></div>
+      <div class="card"><div class="step-num">2</div><h3>Join your leagues</h3><p>Use the invite code from your admin to enter free skill-based prize leagues.</p></div>
       <div class="card"><div class="step-num">3</div><h3>Climb and win</h3><p>Your points sync automatically every gameweek. Compete for the pot.</p></div>
     </div>
     <div style="margin-top:36px"><a href="how-it-works.html" class="btn-ghost">Full walkthrough</a></div>
@@ -58,11 +68,11 @@
       <p class="section-lead">One season, many prizes. Some run off your FPL team as it stands. Others ask you to make a second call each week.</p>
     </div>
     <div class="grid-2" style="margin-top:48px">
-      <div class="league"><div class="league-head"><div><span class="tag tag-aside">7Aside</span><h3>7Aside Weekly</h3><p>Name seven of your own squad. Only they score.</p></div><div class="prize">Pool</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-season">Season</span><h3>Clashd Season</h3><p>All 38 gameweeks. Highest cumulative FPL score wins.</p></div><div class="prize">Pool · 60/25/15</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-weekly">Weekly</span><h3>Weekly Battle</h3><p>A fresh competition every gameweek.</p></div><div class="prize">Pool</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-bonus">Bonus</span><h3>Captain Royale</h3><p>Best cumulative captain points all season.</p></div><div class="prize">Pool</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-private">Private</span><h3>Elite Top 10</h3><p>Invite-only league for the platform's best.</p></div><div class="prize">Pool · 60/25/15</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-aside">7Aside</span><h3>7Aside Weekly</h3><p>Name seven of your own squad. Only they score.</p></div><div class="prize">Free entry</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-season">Season</span><h3>Clashd Season</h3><p>All 38 gameweeks. Highest cumulative FPL score wins.</p></div><div class="prize">Free entry &middot; 3 places paid</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-weekly">Weekly</span><h3>Weekly Battle</h3><p>A fresh competition every gameweek.</p></div><div class="prize">Free entry</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-bonus">Bonus</span><h3>Captain Royale</h3><p>Best cumulative captain points all season.</p></div><div class="prize">Free entry</div></div></div>
+      <div class="league"><div class="league-head"><div><span class="tag tag-private">Private</span><h3>Elite Top 10</h3><p>Invite-only league for the platform's best.</p></div><div class="prize">Free entry &middot; 3 places paid</div></div></div>
     </div>
     <div class="center" style="margin-top:32px"><a href="leagues.html" class="btn-ghost">See all the leagues</a></div>
     <div class="banner">
@@ -150,7 +160,7 @@ function sendInvite(e){
       <div class="foot-col"><h5>Product</h5>
         <a href="how-it-works.html">How it works</a>
         <a href="leagues.html">Leagues</a>
-        <a href="pricing.html">Pricing</a>
+        <a href="pricing.html">Prizes</a>
         <a href="one-v-one.html">1v1 Battles</a>
         <a href="whats-coming.html">What's coming</a>
       </div>

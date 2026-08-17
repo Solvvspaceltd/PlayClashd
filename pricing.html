@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clashd pricing: pick your leagues</title>
-<meta name="description" content="Clashd season pricing. Enter one league or all nine, with prize pools funded by entries and split by published shares.">
+<title>Clashd: free to enter this season</title>
+<meta name="description" content="Every Clashd competition is free to enter for the 2026/27 season. Prizes are funded by SolvvSpace Ltd and published before each competition opens.">
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,6 +37,16 @@
 @media(max-width:860px){ .tiers { grid-template-columns:repeat(2,1fr); } }
 @media(max-width:560px){ .tiers { grid-template-columns:1fr; } }
 </style>
+<style>
+/* Mobile nav: links wrap to a scrollable second row instead of being hidden. */
+@media(max-width:820px){
+  nav .wrap { flex-wrap:wrap; row-gap:12px; position:relative; }
+  .nav-links { width:100%; gap:18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+  .nav-links::-webkit-scrollbar { display:none; }
+  .nav-links a { font-size:13px; white-space:nowrap; flex:0 0 auto; display:inline-block; }
+  .nav-links a.nav-cta { position:absolute; top:0; right:0; padding:8px 14px; font-size:13px; }
+}
+</style>
 </head>
 <body>
 <nav><div class="wrap">
@@ -44,7 +54,7 @@
   <div class="nav-links">
     <a href="how-it-works.html">How it works</a>
     <a href="leagues.html">Leagues</a>
-    <a href="pricing.html" class="active">Pricing</a>
+    <a href="pricing.html" class="active">Prizes</a>
     <a href="one-v-one.html">1v1 Battles</a>
     <a href="index.html#invite" class="nav-cta">Request invite</a>
   </div>
@@ -52,9 +62,9 @@
 
 <header class="page-hero">
   <div class="wrap">
-    <div class="eyebrow">Season pricing</div>
-    <h1>Enter one, or enter everything</h1>
-    <p class="lead">One payment covers your whole 2026/27 season. The more competitions you enter, the less each one costs. Prize pools are funded by entries and split by published shares, so what goes in is what gets paid out.</p>
+    <div class="eyebrow">Season 2026/27</div>
+    <h1>Free to enter, all season</h1>
+    <p class="lead">Every competition on Clashd is free to enter for the 2026/27 season. No entry fee, no stake, nothing at risk. Prizes are put up by SolvvSpace Ltd and published before each competition opens.</p>
   </div>
 </header>
 
@@ -62,8 +72,8 @@
   <div class="wrap">
     <div class="banner">
       <div>
-        <div class="big">The pilot is free</div>
-        <p>Entry fees do not apply during the current pilot season. The pricing below is what the full season will cost when paid entry opens, and it will be confirmed to every registered player in advance.</p>
+        <div class="big">No entry fee this season</div>
+        <p>Clashd is building its community for 2026/27, so every competition is open with no cost to play. You are never staking your own money, and there is nothing to lose by joining.</p>
       </div>
     </div>
   </div>
@@ -72,41 +82,19 @@
 <section style="background:var(--elevated)">
   <div class="wrap">
     <div class="center">
-      <div class="eyebrow">Choose your entry</div>
-      <h2 class="section-title">Four ways in</h2>
-      <p class="section-lead" style="margin:0 auto">Every tier is a one-off payment for the whole season. Pick the leagues you want when you join.</p>
+      <div class="eyebrow">What you get</div>
+      <h2 class="section-title">Everything, at no cost</h2>
+      <p class="section-lead" style="margin:0 auto">One invite code and one linked FPL team opens every competition Clashd runs this season.</p>
     </div>
 
-    <div class="tiers">
-      <div class="tier">
-        <div class="tier-name">Single</div>
-        <div class="tier-price">£20</div>
-        <div class="tier-each">1 league &middot; £20.00 each</div>
-        <div class="tier-desc">Try one competition. Most players start with the season-long league or 7Aside.</div>
-      </div>
-      <div class="tier">
-        <div class="tier-name">Trio</div>
-        <div class="tier-price">£50</div>
-        <div class="tier-each">3 leagues &middot; £16.67 each</div>
-        <div class="tier-desc">A season league, a weekly, and a bonus format. Enough to keep every gameweek live.</div>
-      </div>
-      <div class="tier featured">
-        <span class="tier-flag">Most popular</span>
-        <div class="tier-name">Six pack</div>
-        <div class="tier-price">£70</div>
-        <div class="tier-each">6 leagues &middot; £11.67 each</div>
-        <div class="tier-desc">Two thirds of the board, including both squad-selection formats.</div>
-      </div>
-      <div class="tier">
-        <div class="tier-name">All access</div>
-        <div class="tier-price">£90</div>
-        <div class="tier-each">9 leagues &middot; £10.00 each</div>
-        <div class="tier-desc">Every competition Clashd runs this season, plus any new format added before GW38.</div>
-      </div>
+    <div class="grid-3" style="text-align:left;margin-top:44px">
+      <div class="card"><h3>Every competition</h3><p>Season-long, weekly, bonus formats and both squad-selection games. Nine competitions, no tiers, nothing held back behind a paywall.</p></div>
+      <div class="card"><h3>Real cash prizes</h3><p>Prizes are funded by SolvvSpace Ltd and paid by bank transfer. The prize for each competition is published before it opens and does not change once it starts.</p></div>
+      <div class="card"><h3>No catch</h3><p>No stake, no deposit, no card details, no charge to claim a prize. Clashd is invite-only and capped at 100 managers this season.</p></div>
     </div>
 
     <p class="center" style="color:var(--dim);font-size:14px;margin-top:28px">
-      All prices include VAT at the prevailing UK rate. One linked FPL team per player.
+      Paid entry may be introduced in a future season. If it ever is, every registered player will be told well in advance and nothing will change mid-season.
     </p>
   </div>
 </section>
@@ -114,15 +102,15 @@
 <section>
   <div class="wrap">
     <div class="center">
-      <div class="eyebrow">Where the money goes</div>
-      <h2 class="section-title">Pools grow with the players</h2>
-      <p class="section-lead" style="margin:0 auto">Clashd does not promise a fixed prize and hope enough people enter. Each league pays out a published share of what that league actually collects.</p>
+      <div class="eyebrow">How prizes work</div>
+      <h2 class="section-title">Funded by us, won by you</h2>
+      <p class="section-lead" style="margin:0 auto">Because nobody pays to enter, prize money does not come from players. SolvvSpace Ltd puts up the prize fund for the season.</p>
     </div>
 
     <div class="grid-3" style="text-align:left;margin-top:44px">
-      <div class="card"><div class="step-num">1</div><h3>You enter</h3><p>Your payment is split across the leagues you chose. VAT is accounted for first, as required by UK law.</p></div>
-      <div class="card"><div class="step-num">2</div><h3>The pool fills</h3><p>Seventy percent of every net entry goes straight into prize pools. The rest covers running Clashd. Each league shows its live pot in the app as players join.</p></div>
-      <div class="card"><div class="step-num">3</div><h3>Winners take their share</h3><p>At the end of the competition the pool is paid out by the published split. Because prizes are a share of the pool, a league can never owe more than it holds.</p></div>
+      <div class="card"><div class="step-num">1</div><h3>You join free</h3><p>Register with your invite code, link your FPL team, and enter any competition you like. Nothing to pay at any point.</p></div>
+      <div class="card"><div class="step-num">2</div><h3>The prize is set</h3><p>SolvvSpace Ltd publishes the prize for each competition before it opens. It is committed up front, so you always know what you are playing for.</p></div>
+      <div class="card"><div class="step-num">3</div><h3>Winners get paid</h3><p>When the competition settles, we pay winners directly by bank transfer. No fee to claim, no deductions, no waiting on other players.</p></div>
     </div>
   </div>
 </section>
@@ -132,16 +120,16 @@
     <div class="split">
       <div>
         <div class="eyebrow">Prize splits</div>
-        <h2>How each pool divides</h2>
-        <p>Every league publishes its split before you enter, and it does not change once the competition starts.</p>
-        <p style="color:var(--dim);font-size:14px">A league needs a minimum of ten entrants to run. If it does not reach ten, your entry moves to another league of your choice, or is refunded in full.</p>
+        <h2>How each prize divides</h2>
+        <p>Every competition publishes how its prize is divided before you enter, and it does not change once the competition starts.</p>
+        <p style="color:var(--dim);font-size:14px">A competition needs a minimum of ten entrants to run. If it does not reach ten, it is held over and you are free to enter another.</p>
       </div>
       <div class="card">
         <div class="split-row"><span class="lbl">Season leagues, three places</span><span class="val">60 / 25 / 15</span></div>
         <div class="split-row"><span class="lbl">Weekly leagues</span><span class="val">Winner takes the pot</span></div>
         <div class="split-row"><span class="lbl">5Aside, two places</span><span class="val">70 / 30</span></div>
         <div class="split-row"><span class="lbl">Bonus formats</span><span class="val">Winner takes the pot</span></div>
-        <div class="split-row"><span class="lbl">Into prize pools</span><span class="val" style="color:var(--gold)">70% of net entries</span></div>
+        <div class="split-row"><span class="lbl">Cost to enter</span><span class="val" style="color:var(--gold)">Nothing</span></div>
       </div>
     </div>
   </div>
@@ -154,10 +142,10 @@
       <h2 class="section-title">The details</h2>
     </div>
     <div class="grid-2" style="text-align:left;margin-top:44px">
-      <div class="card"><h3>Can I add leagues later?</h3><p>Yes. You pay the difference between your current tier and the one above it, at any point before the league you want to join has started.</p></div>
-      <div class="card"><h3>What if I join late?</h3><p>Season leagues are open until GW10, priced pro rata. Weekly and squad-selection leagues can be joined before any gameweek deadline.</p></div>
+      <div class="card"><h3>Is it really free?</h3><p>Yes. No entry fee, no deposit, no card details and no charge to claim a prize. SolvvSpace Ltd funds the prizes as an investment in building the community.</p></div>
+      <div class="card"><h3>What if I join late?</h3><p>Season leagues are open until GW10. Weekly and squad-selection competitions can be joined before any gameweek deadline, so you can start whenever you like.</p></div>
       <div class="card"><h3>How do I get paid?</h3><p>SolvvSpace Ltd holds the pool and pays winners directly by bank transfer once the competition is settled and results are final.</p></div>
-      <div class="card"><h3>Is this gambling?</h3><p>No. Every Clashd competition is decided by a points-based grading system built on Fantasy Premier League performance. It is a game of skill, not a lottery. See the <a href="terms.html" style="color:var(--green)">Terms</a>.</p></div>
+      <div class="card"><h3>Is this gambling?</h3><p>No. There is no payment to enter and nothing at stake, and every competition is decided by a points-based grading system built on Fantasy Premier League performance. It is a game of skill, not a lottery. See the <a href="terms.html" style="color:var(--green)">Terms</a>.</p></div>
     </div>
   </div>
 </section>
@@ -184,7 +172,7 @@
       <div class="foot-col"><h5>Product</h5>
         <a href="how-it-works.html">How it works</a>
         <a href="leagues.html">Leagues</a>
-        <a href="pricing.html">Pricing</a>
+        <a href="pricing.html">Prizes</a>
         <a href="one-v-one.html">1v1 Battles</a>
         <a href="whats-coming.html">What's coming</a>
       </div>

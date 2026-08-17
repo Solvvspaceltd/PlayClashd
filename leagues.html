@@ -4,13 +4,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<style>.tag-aside { background:rgba(232,178,46,0.18); color:var(--gold,#E8B22E); }</style></head><body>
+<style>.tag-aside { background:rgba(232,178,46,0.18); color:var(--gold,#E8B22E); }</style><style>
+/* Mobile nav: links wrap to a scrollable second row instead of being hidden. */
+@media(max-width:820px){
+  nav .wrap { flex-wrap:wrap; row-gap:12px; position:relative; }
+  .nav-links { width:100%; gap:18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+  .nav-links::-webkit-scrollbar { display:none; }
+  .nav-links a { font-size:13px; white-space:nowrap; flex:0 0 auto; display:inline-block; }
+  .nav-links a.nav-cta { position:absolute; top:0; right:0; padding:8px 14px; font-size:13px; }
+}
+</style>
+</head><body>
 <nav><div class="wrap">
   <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
   <div class="nav-links">
     <a href="how-it-works.html">How it works</a>
     <a href="leagues.html" class="active">Leagues</a>
-    <a href="pricing.html">Pricing</a>
+    <a href="pricing.html">Prizes</a>
     <a href="one-v-one.html">1v1 Battles</a>
     <a href="whats-coming.html">What's coming</a>
     <a href="index.html#invite" class="nav-cta">Request invite</a>
@@ -20,7 +30,7 @@
   <div class="wrap">
     <div class="eyebrow">The competitions</div>
     <h1>Nine ways to win</h1>
-    <p class="lead">One FPL season, many prizes. Some competitions run off the team you already manage. Others, like 7Aside, ask you to make a second set of decisions each week that exist only on Clashd. Every pot is funded by entries and split by a published share, so the more players join, the bigger it gets.</p>
+    <p class="lead">One FPL season, many prizes. Some competitions run off the team you already manage. Others, like 7Aside, ask you to make a second set of decisions each week that exist only on Clashd. Every competition is free to enter this season. Prizes are put up by SolvvSpace Ltd and published before each competition opens.</p>
   </div>
 </header>
 
@@ -30,69 +40,69 @@
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-aside">7Aside</span><h3>7Aside Weekly</h3><p>Name seven of your own FPL squad each gameweek. Only those seven score.</p></div>
-          <div class="prize">Pool &middot; winner takes all</div>
+          <div class="prize">Free entry &middot; winner takes all</div>
         </div>
         <div class="guide">Pick 1 goalkeeper, 2 defenders, 2 midfielders and 2 forwards from the fifteen players already in your FPL team. No bench, no autosubs, no captain. A player who does not start scores nothing, so reading rotation is the whole game. Selection opens once the previous gameweek locks and closes at the FPL deadline. Highest total from your seven wins.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-aside">5Aside</span><h3>5Aside Weekly</h3><p>The tighter version. Five players, two places paid.</p></div>
-          <div class="prize">Pool · 70 / 30</div>
+          <div class="prize">Free entry &middot; 2 places paid</div>
         </div>
         <div class="guide">Same idea as 7Aside with less room for error: 1 goalkeeper, 1 defender, 2 midfielders and 1 forward. Fewer picks means one blank hurts more, and one haul can carry the week. Top two finishers share the pot.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-season">Season</span><h3>Clashd Season</h3><p>The main event across all 38 gameweeks of the Premier League season.</p></div>
-          <div class="prize">Pool · 60 / 25 / 15</div>
+          <div class="prize">Free entry &middot; 3 places paid</div>
         </div>
         <div class="guide">Your cumulative FPL score from GW1 to GW38 determines your final rank. No transfers or changes needed inside Clashd, just manage your FPL team as normal and scores update automatically. Highest total at GW38 wins.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-weekly">Weekly</span><h3>Weekly Battle</h3><p>Every gameweek is a fresh competition. Highest single-GW score wins the pot.</p></div>
-          <div class="prize">Pool · winner takes all</div>
+          <div class="prize">Free entry &middot; winner takes all</div>
         </div>
         <div class="guide">Points hits are deducted as per your official FPL score. Chips count. Results confirmed once the FPL API marks the gameweek final, usually a few hours after the last match.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-bonus">Bonus</span><h3>Captain Royale</h3><p>The manager with the highest cumulative captain points across the season wins.</p></div>
-          <div class="prize">Pool · winner takes all</div>
+          <div class="prize">Free entry &middot; winner takes all</div>
         </div>
         <div class="guide">Your captain choice is pulled directly from your FPL team each gameweek. Triple Captain counts double. No input needed, just pick wisely. Winner announced at GW38.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-bonus">Bonus</span><h3>No Hit Squad</h3><p>Finish the entire season without taking a single points hit.</p></div>
-          <div class="prize">Pool · split by qualifiers</div>
+          <div class="prize">Free entry &middot; split by qualifiers</div>
         </div>
         <div class="guide">A hit is any transfer beyond your free transfer(s) in a gameweek. Wildcard and Free Hit don't count as hits. One hit across the season eliminates you. The pot is split equally between everyone who finishes hit-free.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-bonus">Bonus</span><h3>Transfer Genius</h3><p>The manager whose transfers gained the most net points across the season wins.</p></div>
-          <div class="prize">Pool · winner takes all</div>
+          <div class="prize">Free entry &middot; winner takes all</div>
         </div>
         <div class="guide">Transfer gain = points scored by players brought in minus those moved out, on the gameweek of each transfer. Calculated automatically from your FPL history. Highest cumulative gain at GW38 wins.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-bonus">Bonus</span><h3>Green Arrow</h3><p>The manager who improves their overall FPL rank the most times across the season wins.</p></div>
-          <div class="prize">Pool · winner takes all</div>
+          <div class="prize">Free entry &middot; winner takes all</div>
         </div>
         <div class="guide">A green arrow means your overall rank improved after a gameweek. We count how many you collect across the season. Most rank improvements at GW38 wins. Consistency beats one big score.</div>
       </div>
       <div class="league">
         <div class="league-head">
           <div><span class="tag tag-private">Private</span><h3>Elite Top 10</h3><p>An invite-only private league for the top 10 ranked managers on the platform.</p></div>
-          <div class="prize">Pool · 60 / 25 / 15</div>
+          <div class="prize">Free entry &middot; 3 places paid</div>
         </div>
         <div class="guide">Seeded at the start of the season based on previous performance. Same scoring rules as the main Season league. Final standings at GW38 decide prize distribution.</div>
       </div>
     </div>
     <div class="banner">
-      <div><div class="big gold">70%</div><p>of net entries goes into prize pools</p></div>
+      <div><div class="big gold">Free</div><p>to enter, every competition, all season</p></div>
       <div style="text-align:right"><div class="big">9</div><p>competitions · one linked FPL team</p></div>
     </div>
   </div>
@@ -150,7 +160,7 @@ function sendInvite(e){
       <div class="foot-col"><h5>Product</h5>
         <a href="how-it-works.html">How it works</a>
         <a href="leagues.html">Leagues</a>
-        <a href="pricing.html">Pricing</a>
+        <a href="pricing.html">Prizes</a>
         <a href="one-v-one.html">1v1 Battles</a>
         <a href="whats-coming.html">What's coming</a>
       </div>

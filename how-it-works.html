@@ -3,13 +3,23 @@
 <title>How Clashd works, link, join, win</title><meta name="description" content="How Clashd works: link your official FPL team, join cash-prize leagues with an invite code, and your scores sync automatically every gameweek."><link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css"></head><body>
+<link rel="stylesheet" href="styles.css"><style>
+/* Mobile nav: links wrap to a scrollable second row instead of being hidden. */
+@media(max-width:820px){
+  nav .wrap { flex-wrap:wrap; row-gap:12px; position:relative; }
+  .nav-links { width:100%; gap:18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+  .nav-links::-webkit-scrollbar { display:none; }
+  .nav-links a { font-size:13px; white-space:nowrap; flex:0 0 auto; display:inline-block; }
+  .nav-links a.nav-cta { position:absolute; top:0; right:0; padding:8px 14px; font-size:13px; }
+}
+</style>
+</head><body>
 <nav><div class="wrap">
   <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
   <div class="nav-links">
     <a href="how-it-works.html" class="active">How it works</a>
     <a href="leagues.html">Leagues</a>
-    <a href="pricing.html">Pricing</a>
+    <a href="pricing.html">Prizes</a>
     <a href="one-v-one.html">1v1 Battles</a>
     <a href="whats-coming.html">What's coming</a>
     <a href="index.html#invite" class="nav-cta">Request invite</a>
@@ -64,7 +74,7 @@
     <p class="section-lead">Clashd is built to be trusted. Here's how prizes and fair play work.</p>
     <div class="grid-3" style="text-align:left;margin-top:48px">
       <div class="card"><h3>Skill, not chance</h3><p>Every competition is decided by a points-based grading system built on your FPL performance. Outcomes reflect skill and knowledge, never luck. Clashd is a game of skill, not a lottery.</p></div>
-      <div class="card"><h3>Transparent prize pools</h3><p>Each competition's prize pool is the total of eligible entries, less any platform fee and taxes. Any fee is shown before you enter, no surprises.</p></div>
+      <div class="card"><h3>Free to enter</h3><p>No entry fee and no stake on any competition this season. Prizes are funded by SolvvSpace Ltd and published before each competition opens.</p></div>
       <div class="card"><h3>One account, one manager</h3><p>Invite-only and capped at 100 players. Multiple accounts or score manipulation means disqualification.</p></div>
     </div>
   </div>
@@ -73,17 +83,17 @@
 <section style="background:var(--elevated)">
   <div class="wrap">
     <div class="center">
-      <div class="eyebrow">Prize payments &amp; receivables</div>
+      <div class="eyebrow">Prizes</div>
       <h2 class="section-title">How the money works</h2>
-      <p class="section-lead">Clear and above board. Here is exactly how entries and prizes flow.</p>
+      <p class="section-lead">Clear and above board. Here is exactly how prizes are funded and paid.</p>
     </div>
     <div class="grid-3" style="text-align:left;margin-top:48px">
-      <div class="card"><div class="step-num">1</div><h3>You enter</h3><p>Where a competition has an entry fee, you pay it to SolvvSpace Ltd, the operator. Your contribution joins that competition's prize pool. During the current pilot, entry is free.</p></div>
-      <div class="card"><div class="step-num">2</div><h3>We hold the pool</h3><p>SolvvSpace Ltd holds and administers the prize pool for each competition. The pool is the total of eligible entries, less any disclosed platform fee and any taxes due. VAT is accounted for under UK law.</p></div>
-      <div class="card"><div class="step-num">3</div><h3>Winners are paid</h3><p>When the competition ends, prizes are paid out by SolvvSpace Ltd to the qualifying participants, as decided by the points-based grading system. Prizes are paid only to verified players aged 18 or over.</p></div>
+      <div class="card"><div class="step-num">1</div><h3>You enter free</h3><p>Every competition this season is free to enter. There is no entry fee, no stake and nothing to lose. You join with an invite code and a linked FPL team.</p></div>
+      <div class="card"><div class="step-num">2</div><h3>We fund the prizes</h3><p>Prizes are put up by SolvvSpace Ltd from its own funds, not from player money. The prize for each competition is published before that competition opens, and it does not change once it has started.</p></div>
+      <div class="card"><div class="step-num">3</div><h3>Winners are paid</h3><p>When the competition ends, SolvvSpace Ltd pays the winners directly by bank transfer, decided by the points-based grading system. There is never a charge to claim a prize. Prizes are paid only to verified players aged 18 or over.</p></div>
     </div>
     <div class="banner" style="margin-top:40px">
-      <div><div class="big gold">Operated by SolvvSpace Ltd</div><p>All entries and payouts are processed through the company, one clear accountable operator.</p></div>
+      <div><div class="big gold">No stake, no risk</div><p>Because entry is free, you are never playing with your own money. Prizes come from SolvvSpace Ltd.</p></div>
     </div>
     <p class="center" style="color:var(--dim);font-size:13px;margin-top:20px;max-width:640px;margin-left:auto;margin-right:auto">Full detail is set out in the <a href="terms.html" style="color:var(--green)">Terms &amp; Conditions</a>. Clashd is a skill-based competition for players aged 18+. Please play responsibly.</p>
   </div>
@@ -125,7 +135,7 @@ function sendInvite(e){
       <div class="foot-col"><h5>Product</h5>
         <a href="how-it-works.html">How it works</a>
         <a href="leagues.html">Leagues</a>
-        <a href="pricing.html">Pricing</a>
+        <a href="pricing.html">Prizes</a>
         <a href="one-v-one.html">1v1 Battles</a>
         <a href="whats-coming.html">What's coming</a>
       </div>
