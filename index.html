@@ -1,102 +1,109 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clashd: Free to enter, real prizes</title>
-<meta name="description" content="Clashd turns your Fantasy Premier League season into a real competition. Free to enter, invite-only, with cash prizes decided by your FPL points.">
-<link rel="icon" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<style>.tag-aside { background:rgba(232,178,46,0.18); color:var(--gold,#E8B22E); }</style>
-<style>
-/* Mobile nav: links wrap to a scrollable second row instead of being hidden. */
-@media(max-width:820px){
-  nav .wrap { flex-wrap:wrap; row-gap:12px; position:relative; }
-  .nav-links { width:100%; gap:18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
-  .nav-links::-webkit-scrollbar { display:none; }
-  .nav-links a { font-size:13px; white-space:nowrap; flex:0 0 auto; display:inline-block; }
-  .nav-links a.nav-cta { position:absolute; top:0; right:0; padding:8px 14px; font-size:13px; }
-}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clashd — win your week</title>
+<meta name="description" content="A Fantasy Premier League season with a fixture list, a table you can fall out of, and analysis built around the managers you actually play.">
+<meta property="og:title" content="Clashd — win your week">
+<meta property="og:description" content="A Fantasy Premier League season with a fixture list, a table you can fall out of, and analysis built around the managers you actually play.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav><div class="wrap">
-  <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
-  <div class="nav-links">
-    <a href="how-it-works.html">How it works</a>
-    <a href="leagues.html">Leagues</a>
-    <a href="pricing.html">Prizes</a>
-    <a href="one-v-one.html">1v1 Battles</a>
-    <a href="whats-coming.html">What's coming</a>
-    <a href="index.html#invite" class="nav-cta">Request invite</a>
-  </div>
-</div></nav>
-<header class="page-hero center" style="padding-top:96px">
+<header class="nav">
   <div class="wrap">
-    <span class="eyebrow">Invite-only · Season 2026/27</span>
-    <h1>Free to enter.<br><span class="accent">Real prizes.</span></h1>
-    <p class="lead" style="margin:0 auto 36px">Clashd turns your Fantasy Premier League season into a real competition. Link your FPL team once, join your leagues, and compete on your FPL points for cash prizes. No entry fee, no stake, nothing to lose.</p>
-    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-      <a href="#invite" class="btn-primary">Request an invite</a>
-      <a href="how-it-works.html" class="btn-ghost">See how it works</a>
-    </div>
+    <a class="logo" href="index.html">
+      <img src="logo.png" alt="Clashd">
+      <span class="word">Clash<b>d</b></span>
+    </a>
+    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><a class="get" href="[TESTFLIGHT LINK]">Get the app</a></nav>
   </div>
 </header>
-
-<section>
-  <div class="wrap center">
-    <div class="eyebrow">How it works</div>
-    <h2 class="section-title">Play FPL as you always do</h2>
-    <p class="section-lead">No second team to manage. Clashd runs on your official FPL score.</p>
-    <div class="grid-3" style="text-align:left;margin-top:48px">
-      <div class="card"><div class="step-num">1</div><h3>Link your team</h3><p>Connect your official FPL Manager ID once. Takes about thirty seconds.</p></div>
-      <div class="card"><div class="step-num">2</div><h3>Join your leagues</h3><p>Use the invite code from your admin to enter free skill-based prize leagues.</p></div>
-      <div class="card"><div class="step-num">3</div><h3>Climb and win</h3><p>Your points sync automatically every gameweek. Compete for the pot.</p></div>
-    </div>
-    <div style="margin-top:36px"><a href="how-it-works.html" class="btn-ghost">Full walkthrough</a></div>
-  </div>
-</section>
-
-<section style="background:var(--elevated)">
-  <div class="wrap">
-    <div class="center">
-      <div class="eyebrow">The competitions</div>
-      <h2 class="section-title">Nine ways to win</h2>
-      <p class="section-lead">One season, many prizes. Some run off your FPL team as it stands. Others ask you to make a second call each week.</p>
-    </div>
-    <div class="grid-2" style="margin-top:48px">
-      <div class="league"><div class="league-head"><div><span class="tag tag-aside">7Aside</span><h3>7Aside Weekly</h3><p>Name seven of your own squad. Only they score.</p></div><div class="prize">Free entry</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-season">Season</span><h3>Clashd Season</h3><p>All 38 gameweeks. Highest cumulative FPL score wins.</p></div><div class="prize">Free entry &middot; 3 places paid</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-weekly">Weekly</span><h3>Weekly Battle</h3><p>A fresh competition every gameweek.</p></div><div class="prize">Free entry</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-bonus">Bonus</span><h3>Captain Royale</h3><p>Best cumulative captain points all season.</p></div><div class="prize">Free entry</div></div></div>
-      <div class="league"><div class="league-head"><div><span class="tag tag-private">Private</span><h3>Elite Top 10</h3><p>Invite-only league for the platform's best.</p></div><div class="prize">Free entry &middot; 3 places paid</div></div></div>
-    </div>
-    <div class="center" style="margin-top:32px"><a href="leagues.html" class="btn-ghost">See all the leagues</a></div>
-    <div class="banner">
-      <div><div class="big gold">9</div><p>competitions across the 2026/27 season</p></div>
-      <div style="text-align:right"><div class="big">100</div><p>managers · invite-only community</p></div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="split">
-      <div>
-        <div class="eyebrow">Only on Clashd</div>
-        <h2>7Aside</h2>
-        <p>You already agonised over your fifteen. Now name seven of them: one keeper, two defenders, two midfielders, two forwards. Only those seven score.</p>
-        <p>No bench, no autosubs, no captain. A player who does not start scores nothing, so reading rotation becomes the whole game. It is a second set of decisions on a team you already own, and it exists nowhere else.</p>
-        <div style="margin-top:24px"><a href="leagues.html" class="btn-ghost">See the leagues</a></div>
+<section class="hero">
+  <div class="wrap inner">
+    <div>
+      <div class="kick">Clashd Premier League &middot; 2026/27</div>
+      <h1>Win your <em>week</em>,<br>not just your season.</h1>
+      <p>Clashd Premier League turns your Fantasy Premier League team into a proper campaign: a
+        fixture every gameweek against a manager who wants to beat you, a division you can climb or
+        fall out of, and eight more competitions running off the same squad.</p>
+      <div class="actions">
+        <a class="btn btn-main" href="[TESTFLIGHT LINK]">Get the app</a>
+        <a class="btn btn-line" href="how-it-works.html">How it works</a>
       </div>
-      <div class="split-visual">
-        <div class="vs">
-          <div class="mgr win"><div class="av">7</div><div class="name">Your seven</div><div class="score">61</div></div>
-          <div class="versus">VS</div>
-          <div class="mgr"><div class="av">R</div><div class="name">Rival seven</div><div class="score">48</div></div>
+    </div>
+    <div><div class="board">
+  <div class="strip"><b>Gameweek 6</b><span>Deadline Fri 18:30</span></div>
+  <div class="body">
+    <div class="teams">
+      <div class="team"><div class="nm">Your team</div><div class="sc num">58</div></div>
+      <div class="vs">FORECAST</div>
+      <div class="team away"><div class="nm">Nutmeg United</div><div class="sc num">54</div></div>
+    </div>
+    <div class="meter"><i style="width:61%"></i></div>
+    <div class="line">61% chance you win this one. <b>It comes down to Palmer against Isak.</b></div>
+  </div>
+  <div class="foot">
+    <div>Captain pick <b>Haaland</b></div>
+    <div>Both own <b>9 players</b></div>
+    <div>Your call <b>Palmer</b></div>
+  </div>
+</div></div>
+  </div>
+</section>
+
+<div class="band"><div class="wrap">
+  <span><b>Clashd Premier League</b></span>
+  <span>Weekly head-to-head</span>
+  <span>Promotion &amp; relegation</span>
+  <span>9 competitions</span>
+  <span><b>Free</b> to enter</span>
+  <span>18+</span>
+</div></div>
+
+<section>
+  <div class="wrap">
+    <div class="head"><span class="no">01</span><h2>Clashd Premier League</h2></div>
+    <p class="lede">The flagship, and the reason people stay. Ten million managers is not a league.
+      Seven rivals, a fixture list and a relegation place is. Every manager gets a division, a
+      weekly opponent and a table that can go either way.</p>
+    <div class="two">
+      <div><table class="ltable">
+  <tr><th>#</th><th>Manager</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr>
+  <tr class="up"><td class="num">1</td><td>Sunday Legends</td><td class="num">5</td><td class="num">4</td><td class="num">0</td><td class="num">1</td><td class="num">12</td></tr>
+  <tr class="up me"><td class="num">2</td><td>Your team</td><td class="num">5</td><td class="num">3</td><td class="num">1</td><td class="num">1</td><td class="num">10</td></tr>
+  <tr><td class="num">3</td><td>Nutmeg United</td><td class="num">5</td><td class="num">3</td><td class="num">0</td><td class="num">2</td><td class="num">9</td></tr>
+  <tr><td class="num">4</td><td>Park Life FC</td><td class="num">5</td><td class="num">2</td><td class="num">1</td><td class="num">2</td><td class="num">7</td></tr>
+  <tr><td class="num">5</td><td>The Group Chat</td><td class="num">5</td><td class="num">1</td><td class="num">2</td><td class="num">2</td><td class="num">5</td></tr>
+  <tr class="down"><td class="num">6</td><td>Last Minute XI</td><td class="num">5</td><td class="num">1</td><td class="num">1</td><td class="num">3</td><td class="num">4</td></tr>
+  <tr class="down"><td class="num">7</td><td>Deadline Day FC</td><td class="num">5</td><td class="num">0</td><td class="num">1</td><td class="num">4</td><td class="num">1</td></tr>
+</table>
+<div class="key">
+  <span><i style="background:var(--green)"></i>Promotion</span>
+  <span><i style="background:var(--red)"></i>Relegation</span>
+  <span>Illustrative table. Two up, two down at the end of each cycle.</span>
+</div></div>
+      <div>
+        <div class="panel">
+          <div class="tag">Matchday</div>
+          <h3>Three points, every gameweek</h3>
+          <p>Your net score plays your opponent's. Win it and you take three points, the same as any
+            Saturday. Lose it and you hear about it in the group chat.</p>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <div class="tag">The pyramid</div>
+          <h3>Elite, Premier, Championship</h3>
+          <p>Two go up and two come down at the end of every cycle, and promotion only runs once
+            every division has played out its fixtures. Elite unlocks at 20 managers.</p>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <div class="tag">Everyone plays</div>
+          <h3>A place waiting for you</h3>
+          <p>Join and you are placed in a division with a fixture list already drawn. Join late and
+            it is redrawn from the next gameweek.</p>
         </div>
       </div>
     </div>
@@ -105,77 +112,204 @@
 
 <section>
   <div class="wrap">
-    <div class="split">
-      <div>
-        <div class="eyebrow">Coming soon</div>
-        <h2>1v1 Battles</h2>
-        <p>Go head-to-head with another manager over a single gameweek. Highest score wins the pot. Personal rivalry, settled on the pitch.</p>
-        <p>The purest form of competition on Clashd. Pick your rival, set the stakes, and let the gameweek decide.</p>
-        <div style="margin-top:24px"><a href="one-v-one.html" class="btn-ghost">Explore 1v1 Battles</a></div>
+    <div class="head"><span class="no">02</span><h2>Your week, end to end</h2></div>
+    <p class="lede">Clashd is quiet until it matters, then it tells you the one thing worth knowing.</p>
+    <div class="week">
+      <div class="beat">
+        <div class="when">Friday<small>Two hours out</small></div>
+        <div>
+          <h3>The deadline call</h3>
+          <p>Your match is forecast before you pick. Who you both own, who decides it, and the
+            captain that fits your position in the table, not the one everyone is shouting about.</p>
+          <div class="push">
+            <div class="app">Clashd</div>
+            <div class="t">Gameweek 6 deadline in 2 hours</div>
+            <div class="b">Forecast: you 58, Nutmeg United 54. Our captain pick: Haaland.</div>
+          </div>
+        </div>
       </div>
-      <div class="split-visual">
-        <div class="vs">
-          <div class="mgr win"><div class="av">A</div><div class="name">You</div><div class="score">78</div></div>
-          <div class="versus">VS</div>
-          <div class="mgr"><div class="av">R</div><div class="name">Rival</div><div class="score">64</div></div>
+      <div class="beat">
+        <div class="when">Saturday<small>3pm onwards</small></div>
+        <div>
+          <h3>The scoreline</h3>
+          <p>Live scores against the manager you are drawn with, and against everyone in your
+            division. If your captain gets flagged before kick-off you hear about it, with the next
+            best pick against that opponent.</p>
+        </div>
+      </div>
+      <div class="beat">
+        <div class="when">Monday<small>Once it settles</small></div>
+        <div>
+          <h3>The reckoning</h3>
+          <p>What the week cost you: the points left on your bench, the call that decided it, and
+            where you finished against every Clashd manager. Then the table updates, and it starts
+            again.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="invite">
+<section>
   <div class="wrap">
-    <div class="invite-card">
-      <div class="eyebrow">Get in</div>
-      <h2>Request your invite</h2>
-      <p>Clashd is invite-only and capped at 100 managers for the season. Drop your email and we'll be in touch with your code.</p>
-      <form class="invite-form" onsubmit="return sendInvite(event)">
-        <input type="email" id="email" placeholder="you@email.com" required>
-        <button type="submit">Request invite</button>
-      </form>
-      <p class="invite-note">18+ only. Clashd is a skill-based platform. Please play responsibly.</p>
+    <div class="head"><span class="no">03</span><h2>Analysis that knows who you are playing</h2></div>
+    <p class="lede">Every other FPL tool ranks you against the world. Clashd holds your division's
+      data, so it can answer the only question that decides your week: what do they have that you
+      do not?</p>
+    <div class="two">
+      <div>
+        <div class="shortlist">
+  <div class="row"><div class="rk num">1</div>
+    <div class="who"><b>Haaland</b><small>MCI v BRE (H)</small></div>
+    <span class="chip safe">Safe</span><div class="xp num">15.8</div></div>
+  <div class="row"><div class="rk num">2</div>
+    <div class="who"><b>Palmer</b><small>CHE v BOU (H)</small></div>
+    <span class="chip gain">Gain</span><div class="xp num">13.6</div></div>
+  <div class="row"><div class="rk num">3</div>
+    <div class="who"><b>Salah</b><small>LIV v EVE (A)</small></div>
+    <span class="chip level">Level</span><div class="xp num">13.0</div></div>
+  <div class="row"><div class="rk num">4</div>
+    <div class="who"><b>Mbeumo</b><small>MUN v BUR (H)</small></div>
+    <span class="chip gain">Gain</span><div class="xp num">10.4</div></div>
+</div>
+        <p class="fineprint">Captains ranked by forecast, labelled by what each does against your
+          opponent. Safe protects a lead. Gain is the one they do not own. Illustrative figures.</p>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="tag">Transfers</div>
+          <h3>Who already owns him</h3>
+          <p>A player your whole division owns gains you nothing on them. We rank targets by what
+            they add over five gameweeks, and tell you when a hit actually pays.</p>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <div class="tag">Our record</div>
+          <h3>Marked every week</h3>
+          <p>Forecasts are saved before the deadline and scored afterwards against what happened,
+            next to FPL's own numbers. The result is published in the app.</p>
+        </div>
+        <div class="actions"><a class="btn btn-line" href="analysis.html">See Analysis</a></div>
+      </div>
     </div>
   </div>
 </section>
 
-<script>
-function sendInvite(e){
-  e.preventDefault();
-  var email=document.getElementById('email').value.trim();
-  if(!email) return false;
-  var s=encodeURIComponent('Clashd Invite Request');
-  var b=encodeURIComponent('Hello,\n\nI would like to request an invite to Clashd for the 2026/27 season.\n\nMy email: '+email+'\n\nThanks.');
-  window.location.href='mailto:admin@solvvspace.com?subject='+s+'&body='+b;
-  return false;
-}
-</script>
-<footer><div class="wrap">
-  <div class="foot-grid">
-    <div class="foot-brand">
-      <a href="index.html" class="brand"><img src="clashd-icon.png" alt="Clashd"><span>Clash<span class="d">d</span></span></a>
-      <p>Competitive Fantasy Premier League. Your points, real prizes.</p>
+<section>
+  <div class="wrap">
+    <div class="head"><span class="no">04</span><h2>Name seven. Only they score.</h2></div>
+    <p class="lede">The Aside formats are the bit that is ours. Before the deadline you pick five or
+      seven from your own fifteen. Everyone else on your team goes quiet for the weekend.</p>
+    <div class="two">
+      <div><div class="pitch">
+  <div class="row">
+    <div class="shirt pick"><div class="top"></div><div class="nm">Haaland</div></div>
+    <div class="shirt pick"><div class="top"></div><div class="nm">Palmer</div></div>
+    <div class="shirt out"><div class="top"></div><div class="nm">Wood</div></div>
+  </div>
+  <div class="row">
+    <div class="shirt pick"><div class="top"></div><div class="nm">Salah</div></div>
+    <div class="shirt out"><div class="top"></div><div class="nm">Rice</div></div>
+    <div class="shirt pick"><div class="top"></div><div class="nm">Mbeumo</div></div>
+    <div class="shirt pick"><div class="top"></div><div class="nm">Semenyo</div></div>
+  </div>
+  <div class="row">
+    <div class="shirt pick"><div class="top"></div><div class="nm">Gabriel</div></div>
+    <div class="shirt out"><div class="top"></div><div class="nm">Gvardiol</div></div>
+    <div class="shirt pick"><div class="top"></div><div class="nm">Raya</div></div>
+  </div>
+</div></div>
+      <div>
+        <div class="panel">
+          <div class="tag">7Aside Weekly</div>
+          <h3>Room for a plan</h3>
+          <p>Seven names. Enough to build something, not enough to cover yourself.</p>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <div class="tag">5Aside</div>
+          <h3>Conviction only</h3>
+          <p>Five names. If your captain blanks you feel it twice.</p>
+        </div>
+        <div class="actions"><a class="btn btn-line" href="competitions.html">All nine competitions</a></div>
+      </div>
     </div>
-    <div class="foot-links">
-      <div class="foot-col"><h5>Product</h5>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head"><span class="no">05</span><h2>You and your lads</h2></div>
+    <p class="lede">The group chat has been running the same mini-league for years, and it is a
+      column of numbers. Import it and your lot get a season instead: a table, fixtures, promotion,
+      relegation and eight other ways to take the mick.</p>
+    <div class="two tight">
+      <div class="invite">
+        <div class="kick">One code, nine competitions</div>
+        <div class="code">IMP4K7Q</div>
+        <p>Send it to the group. Everyone who joins lands in every competition, already placed.</p>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="tag">Nobody is added without joining</div>
+          <h3>We do not touch your mates' data</h3>
+          <p>For managers who are not on Clashd we store only their public FPL entry id. No name, no
+            team, nothing shown, nobody contacted, and it is deleted if they have not joined within
+            30 days.</p>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <div class="tag">Bragging rights only</div>
+          <h3>No pots, no money between members</h3>
+          <p>Your FPL mini-league stays exactly as it is. Clashd never holds or moves money between
+            your members.</p>
+        </div>
+        <div class="actions"><a class="btn btn-line" href="import.html">Bring your league over</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closer">
+  <div class="wrap">
+    <h2>Next deadline is coming.</h2>
+    <p class="lede">Link your team with your public FPL ID and you are placed in Clashd Premier
+      League, with a division and a fixture waiting. We never ask for your FPL password, and there
+      is nothing to pay.</p>
+    <div class="actions">
+      <a class="btn btn-main" href="[TESTFLIGHT LINK]">Get the app</a>
+      <a class="btn btn-line" href="[ANDROID APK LINK]">Android</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div class="col">
+        <h4>Play</h4>
         <a href="how-it-works.html">How it works</a>
-        <a href="leagues.html">Leagues</a>
-        <a href="pricing.html">Prizes</a>
-        <a href="one-v-one.html">1v1 Battles</a>
-        <a href="whats-coming.html">What's coming</a>
+        <a href="competitions.html">Competitions</a>
+        <a href="how-to-play.html">Rules</a>
       </div>
-      <div class="foot-col"><h5>Legal</h5>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms &amp; Conditions</a>
-        <a href="mailto:admin@solvvspace.com">Contact</a>
+      <div class="col">
+        <h4>Products</h4>
+        <a href="analysis.html">Clashd Analysis</a>
+        <a href="import.html">Mini-leagues</a>
       </div>
-      <div class="foot-col"><h5>Company</h5>
-        <a href="https://solvvspace.com">SolvvSpace Ltd</a>
-        <a href="mailto:admin@solvvspace.com">Support</a>
+      <div class="col">
+        <h4>Company</h4>
+        <a href="support.html">Support</a>
+        <a href="terms.html">Terms and conditions</a>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="delete-account.html">Delete your account</a>
       </div>
     </div>
+    <div class="small">
+      Clashd is operated by SolvvSpace Ltd, Company No. 16153942, Bedford, England. 18+.<br>
+      Not affiliated with, endorsed by or connected to the Premier League, the Football Association
+      or the official Fantasy Premier League game. Fantasy Premier League data remains the property
+      of the Premier League.<br>
+      &copy; 2026 SolvvSpace Ltd
+    </div>
   </div>
-  <div class="foot-bottom"><div>© 2026 SolvvSpace Ltd · Clashd</div><div>Bedford, England</div></div>
-  <p class="disclaimer">Clashd is a skill-based fantasy competition for users aged 18 and over. Clashd is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League. All FPL data remains the property of the Premier League. Please play responsibly.</p>
-</div></footer>
-</body></html>
+</footer>
+</body>
+</html>
