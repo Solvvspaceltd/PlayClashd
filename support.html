@@ -19,7 +19,7 @@
       <img src="logo.png" alt="Clashd">
       <span class="word">Clash<b>d</b></span>
     </a>
-    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><a class="get" href="[TESTFLIGHT LINK]">Get the app</a></nav>
+    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><span class="soon">App coming soon</span></nav>
   </div>
 </header>
 <div class="page-head"><div class="wrap">
@@ -84,5 +84,18 @@
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  var items = document.querySelectorAll('.rise');
+  if (!('IntersectionObserver' in window)){
+    for (var i=0;i<items.length;i++) items[i].classList.add('seen');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); } });
+  },{ rootMargin: '0px 0px -12% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>

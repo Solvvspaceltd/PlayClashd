@@ -19,14 +19,14 @@
       <img src="logo.png" alt="Clashd">
       <span class="word">Clash<b>d</b></span>
     </a>
-    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html" class="on">Mini-leagues</a><a class="get" href="[TESTFLIGHT LINK]">Get the app</a></nav>
+    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html" class="on">Mini-leagues</a><span class="soon">App coming soon</span></nav>
   </div>
 </header>
 <section class="hero">
   <div class="wrap inner">
     <div>
       <div class="kick">Mini-leagues</div>
-      <h1>You and your lads,<br>with a <em>fixture list</em>.</h1>
+      <h1>You and your lads,<br>with a fixture list.</h1>
       <p>Same group, same banter, a proper season. Import the FPL mini-league you already run and
         your lot get the whole Clashd suite to themselves, scored privately among you.</p>
       <div class="actions">
@@ -43,9 +43,9 @@
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <div class="head"><span class="no">01</span><h2>What your group gets</h2></div>
+<section class="on-white">
+  <div class="wrap rise">
+    <div class="title-rule"><h2>What your group gets</h2></div>
     <div class="three">
       <div class="panel"><div class="tag">The season</div><h3>A table and a fixture list</h3>
         <p>Weekly head-to-head matches drawn between your members, divisions once you are big enough,
@@ -60,9 +60,9 @@
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <div class="head"><span class="no">02</span><h2>Two rules we will not bend</h2></div>
+<section class="dark">
+  <div class="wrap rise">
+    <div class="title-rule"><h2>Two rules we will not bend</h2></div>
     <div class="two tight">
       <div class="panel"><div class="tag">Privacy</div><h3>Nobody is added without joining</h3>
         <p>Your league's standings are public information from FPL, but we do not keep them. For
@@ -77,8 +77,8 @@
 </section>
 
 <section>
-  <div class="wrap">
-    <div class="head"><span class="no">03</span><h2>What it costs</h2></div>
+  <div class="wrap rise">
+    <div class="title-rule"><h2>What it costs</h2></div>
     <div class="two tight">
       <div class="price best">
         <div class="t">Import</div>
@@ -126,5 +126,18 @@
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  var items = document.querySelectorAll('.rise');
+  if (!('IntersectionObserver' in window)){
+    for (var i=0;i<items.length;i++) items[i].classList.add('seen');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); } });
+  },{ rootMargin: '0px 0px -12% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>

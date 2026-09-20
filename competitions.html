@@ -19,7 +19,7 @@
       <img src="logo.png" alt="Clashd">
       <span class="word">Clash<b>d</b></span>
     </a>
-    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html" class="on">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><a class="get" href="[TESTFLIGHT LINK]">Get the app</a></nav>
+    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html" class="on">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><span class="soon">App coming soon</span></nav>
   </div>
 </header>
 <div class="page-head"><div class="wrap">
@@ -29,7 +29,7 @@
 </div></div>
 <section>
   <div class="wrap">
-    <div class="comps">
+    <div class="comps rise">
       <div class="comp"><div class="n">01</div>
         <h3>Clashd Premier League</h3><p>Divisions, weekly head-to-head fixtures, promotion and relegation. Three for a win, one for a draw.</p><div class="when">Season</div></div><div class="comp"><div class="n">02</div>
         <h3>Clashd Season</h3><p>All 38 gameweeks, highest net total. Nowhere to hide over a season.</p><div class="when">Season</div></div><div class="comp"><div class="n">03</div>
@@ -45,14 +45,14 @@
       before it opens.</p>
   </div>
 </section>
-<section>
-  <div class="wrap">
-    <div class="head"><span class="no">The twist</span><h2>The Aside formats</h2></div>
+<section class="dark turf-bg">
+  <div class="wrap rise">
+    <div class="title-rule"><h2>The Aside formats</h2></div>
     <p class="lede">Your fifteen are picked. Now pick again. Before the deadline you name five or
       seven of them, and only those score that week. A bench player you promote can win it; a
       captain you keep can sink it.</p>
     <div class="two">
-      <div><div class="pitch">
+      <div><div class="pitch"><div class="box"></div>
   <div class="row">
     <div class="shirt pick"><div class="top"></div><div class="nm">Haaland</div></div>
     <div class="shirt pick"><div class="top"></div><div class="nm">Palmer</div></div>
@@ -71,10 +71,10 @@
   </div>
 </div></div>
       <div>
-        <div class="panel"><div class="tag">Why it works</div><h3>A second decision, every week</h3>
+        <div class="rail"><div class="tag">Why it works</div><h3>A second decision, every week</h3>
           <p>It is the one part of Clashd that is not just FPL scored differently. You are choosing
             who you actually believe in, and everyone in your league sees whether you were right.</p></div>
-        <div class="panel" style="margin-top:20px"><div class="tag">Locked</div><h3>Same deadline as FPL</h3>
+        <div class="rail"><div class="tag">Locked</div><h3>Same deadline as FPL</h3>
           <p>Name them before the official deadline. After that they are set, like everything else.</p></div>
       </div>
     </div>
@@ -112,5 +112,18 @@
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  var items = document.querySelectorAll('.rise');
+  if (!('IntersectionObserver' in window)){
+    for (var i=0;i<items.length;i++) items[i].classList.add('seen');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); } });
+  },{ rootMargin: '0px 0px -12% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>

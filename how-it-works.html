@@ -19,7 +19,7 @@
       <img src="logo.png" alt="Clashd">
       <span class="word">Clash<b>d</b></span>
     </a>
-    <nav><a href="how-it-works.html" class="on">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><a class="get" href="[TESTFLIGHT LINK]">Get the app</a></nav>
+    <nav><a href="how-it-works.html" class="on">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><span class="soon">App coming soon</span></nav>
   </div>
 </header>
 <div class="page-head"><div class="wrap">
@@ -29,7 +29,7 @@
 </div></div>
 <section>
   <div class="wrap">
-    <div class="week" style="border-top:none">
+    <div class="week rise" style="border-top:none">
       <div class="beat"><div class="when">Step 1</div>
         <div><h3>Link your team</h3><p>Enter your public FPL Team ID, or search for your team by name. That is the whole setup. We never ask for your FPL password and never sign in as you.</p></div></div><div class="beat"><div class="when">Step 2</div>
         <div><h3>Join what you fancy</h3><p>Nine competitions, all free. Your place in Clashd Premier League is set up for you, with a division and a fixture list waiting.</p></div></div><div class="beat"><div class="when">Step 3</div>
@@ -39,9 +39,9 @@
     </div>
   </div>
 </section>
-<section>
-  <div class="wrap">
-    <div class="head"><span class="no">The pyramid</span><h2>Clashd Premier League</h2></div>
+<section class="dark">
+  <div class="wrap rise">
+    <div class="title-rule"><h2>Clashd Premier League</h2></div>
     <p class="lede">Tiers open as the league grows. Below 20 managers it runs as Premier and
       Championship; at 20 the Elite tier unlocks with ten places.</p>
     <div class="two tight">
@@ -54,17 +54,17 @@
         </table>
       </div>
       <div>
-        <div class="panel"><div class="tag">Timing</div><h3>Promotion is not on a clock</h3>
-          <p>It runs once every division in the league has settled all of its fixtures, so nobody
-            goes up on a half-played season.</p></div>
-        <div class="panel" style="margin-top:20px"><div class="tag">Joining late</div><h3>Straight into the bottom tier</h3>
-          <p>Fixtures are redrawn from the next gameweek, so you get a full run of matches.</p></div>
+        <div class="rail"><div class="tag">Timing</div><h3>Promotion is not on a clock</h3>
+          <p>It runs once every division in the league has settled its fixtures, so nobody goes up
+            on a half-played season.</p></div>
+        <div class="rail"><div class="tag">Joining late</div><h3>Straight into the bottom tier</h3>
+          <p>Fixtures are redrawn from the next gameweek, so you still get a full run of matches.</p></div>
       </div>
     </div>
   </div>
 </section>
-<section>
-  <div class="wrap">
+<section class="on-white">
+  <div class="wrap rise">
     <div class="three">
       <div class="panel"><div class="tag">Scoring</div><h3>Net, always</h3>
         <p>Your points after transfer costs. 42 with one hit is 38 here, which is the whole point of
@@ -76,7 +76,7 @@
         <p>Everything comes from the public FPL service. Your FPL password is never asked for and
           never stored.</p></div>
     </div>
-    <div class="actions"><a class="btn btn-main" href="[TESTFLIGHT LINK]">Get the app</a>
+    <div class="actions"><span class="btn btn-soon">Get the app<small>Coming soon</small></span>
       <a class="btn btn-line" href="how-to-play.html">Read the rules</a></div>
   </div>
 </section>
@@ -112,5 +112,18 @@
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  var items = document.querySelectorAll('.rise');
+  if (!('IntersectionObserver' in window)){
+    for (var i=0;i<items.length;i++) items[i].classList.add('seen');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); } });
+  },{ rootMargin: '0px 0px -12% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>
