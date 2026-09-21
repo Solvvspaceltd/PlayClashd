@@ -479,3 +479,55 @@ footer .small{margin-top:34px;border-top:1px solid rgba(255,255,255,.12);padding
   .facts .wrap{grid-template-columns:1fr}
   .wrap,.bleed{padding:0 16px}
 }
+
+/* ============================================================
+   Fluid layout: the page grows with the screen instead of
+   sitting in a fixed 1120px strip. Gutters, type and the hero
+   tiles all scale between phone and a wide desktop.
+   ============================================================ */
+:root{--wrap:1760px;--gutter:clamp(18px,5vw,88px)}
+.wrap,.bleed{max-width:var(--wrap);padding-left:var(--gutter);padding-right:var(--gutter)}
+section{padding:clamp(56px,7vw,120px) 0}
+h1{font-size:clamp(46px,4.5vw,96px)}
+.title-rule h2{font-size:clamp(32px,3.7vw,68px)}
+.closer h2{font-size:clamp(40px,4.6vw,84px)}
+.page-head h1{font-size:clamp(38px,4.2vw,76px)}
+.lede{font-size:clamp(16px,1.15vw,19px)}
+.hero-copy{max-width:min(760px,100%)}
+.hero-copy p{font-size:clamp(16px,1.2vw,20px)}
+.hero-tiles{min-height:min(88vh,860px)}
+.hero-grid{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4vw,80px)}
+.hero .inner{grid-template-columns:1fr minmax(380px,560px)}
+
+/* the floating tiles keep their arrangement and scale up on wide screens */
+@media (min-width:981px){ .float-zone{width:100%;max-width:560px;margin-left:auto} }
+@media (min-width:1600px){ .float-zone{transform:scale(1.1);transform-origin:right center} }
+@media (min-width:2100px){ .float-zone{transform:scale(1.22)} }
+@media (min-width:1800px){
+  .table-wide .ltable td,.table-wide .ltable th{font-size:16px;padding-top:16px;padding-bottom:16px}
+}
+
+/* ---------- mobile menu ---------- */
+.menu-btn{display:none;margin-left:auto;width:44px;height:44px;border-radius:10px;cursor:pointer;
+  background:transparent;border:1px solid rgba(255,255,255,.25);flex-direction:column;
+  align-items:center;justify-content:center;gap:5px}
+.menu-btn span{display:block;width:20px;height:2px;border-radius:2px;background:#fff;transition:transform .25s ease,opacity .2s ease}
+.nav.open .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav.open .menu-btn span:nth-child(2){opacity:0}
+.nav.open .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+@media (max-width:980px){
+  .nav .wrap{flex-wrap:nowrap;min-height:60px;gap:12px}
+  .menu-btn{display:flex}
+  .nav nav{display:none;position:absolute;left:0;right:0;top:100%;margin:0;
+    flex-direction:column;align-items:stretch;gap:0;flex-wrap:nowrap;
+    background:#0C231A;border-bottom:1px solid rgba(255,255,255,.1);
+    padding:6px var(--gutter) 22px;box-shadow:0 24px 40px -20px rgba(0,0,0,.6)}
+  .nav.open nav{display:flex}
+  .nav nav a{font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:700;letter-spacing:.6px;
+    color:#fff;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+  .nav nav a.on{box-shadow:none;color:var(--bright)}
+  .nav nav .soon{align-self:flex-start;margin-top:18px}
+  .hero-grid,.hero .inner{grid-template-columns:1fr}
+  .hero-tiles{min-height:0}
+}

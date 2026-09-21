@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 <header class="nav">
@@ -19,7 +19,8 @@
       <img src="logo.png" alt="Clashd">
       <span class="word">Clash<b>d</b></span>
     </a>
-    <nav><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><span class="soon">App coming soon</span></nav>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav"><a href="how-it-works.html">How it works</a><a href="competitions.html">Competitions</a><a href="analysis.html">Analysis</a><a href="import.html">Mini-leagues</a><span class="soon">App coming soon</span></nav>
   </div>
 </header>
 <div class="page-head"><div class="wrap">
@@ -95,6 +96,17 @@
   </div>
 </footer>
 <script>
+(function(){
+  var nav = document.querySelector('.nav'), btn = document.querySelector('.menu-btn');
+  if (btn) btn.addEventListener('click', function(){
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  document.querySelectorAll('#site-nav a').forEach(function(a){
+    a.addEventListener('click', function(){ nav.classList.remove('open'); });
+  });
+})();
 (function(){
   var items = document.querySelectorAll('.rise');
   if (!('IntersectionObserver' in window)){
