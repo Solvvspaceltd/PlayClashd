@@ -566,3 +566,17 @@ h1{font-size:clamp(46px,4.5vw,96px)}
   .hero-art{background-image:linear-gradient(90deg,rgba(12,35,26,.96) 0%,rgba(12,35,26,.88) 60%,rgba(12,35,26,.7) 100%),
     url("art-minileagues.jpg")}
 }
+
+/* Competitions: the manager collage carries the whole header */
+.head-collage{min-height:clamp(440px,42vw,680px)}
+.head-collage .head-art img{object-position:center top}
+.head-collage .head-art:after{background:
+  linear-gradient(90deg,rgba(8,24,17,.94) 0%,rgba(8,24,17,.78) 34%,rgba(8,24,17,.34) 62%,rgba(8,24,17,.12) 100%),
+  linear-gradient(0deg,rgba(8,24,17,.85) 0%,rgba(8,24,17,0) 45%)}
+@media (max-width:900px){
+  .head-collage{min-height:0;padding:56px 0 64px}
+  .head-collage .head-art img{object-position:62% top}
+  .head-collage .head-art:after{background:
+    linear-gradient(90deg,rgba(8,24,17,.95) 0%,rgba(8,24,17,.82) 55%,rgba(8,24,17,.5) 100%),
+    linear-gradient(0deg,rgba(8,24,17,.8) 0%,rgba(8,24,17,0) 55%)}
+}
