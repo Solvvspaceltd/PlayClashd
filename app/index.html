@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clashd — sign in</title>
+<meta name="description" content="Sign in to Clashd on the web: your division, your fixture and your analysis.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css?v=12">
+<link rel="canonical" href="https://playclashd.com/app/">
+</head>
+<body>
+
+<!-- ─────────────────────────── sign in ─────────────────────────── -->
+<main class="signin" id="signin">
+  <section class="signin-art">
+    <a class="brand" href="/">
+      <img src="/logo.png" alt="">
+      <span>Clash<b>d</b></span>
+    </a>
+    <img class="bg" src="/art-howitworks.jpg" alt="" aria-hidden="true">
+    <div>
+      <h1>Win your week, not just your season.</h1>
+      <p>Your division, your fixture and your analysis, on a bigger screen.</p>
+    </div>
+    <div class="mini" aria-hidden="true">
+      <div class="cap">Premier division</div>
+      <div class="row"><i>1</i><em>Sunday Legends</em><b>12</b></div>
+      <div class="row me"><i>2</i><em>Your team</em><b>10</b></div>
+      <div class="row"><i>3</i><em>Nutmeg United</em><b>9</b></div>
+      <div class="row"><i>4</i><em>Park Life FC</em><b>7</b></div>
+    </div>
+  </section>
+
+  <section class="signin-form">
+    <div class="form-inner">
+      <h2>Sign in</h2>
+      <div class="sub">Same account as the Clashd app.</div>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="err hide" id="loginErr" role="alert"></div>
+        <button class="btn btn-main" id="loginBtn" type="submit">Sign in</button>
+      </form>
+      <button class="btn btn-ghost" type="button" disabled aria-disabled="true">Create an account</button>
+      <div class="soon-note">Registration opens when the app launches.
+        <a href="mailto:admin@solvvspace.com?subject=Clashd%20early%20access">Ask for early access</a>.</div>
+      <div class="form-foot">
+        Clashd is operated by SolvvSpace Ltd. 18+. Not affiliated with the Premier League or Fantasy Premier League.
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ─────────────────────────── the app ─────────────────────────── -->
+<div class="shell hide" id="shell">
+  <button class="menu-toggle" type="button" id="menuBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+  <div class="scrim" id="scrim"></div>
+
+  <aside class="rail" id="rail">
+    <a class="brand" href="/"><img src="/logo.png" alt=""><span>Clash<b>d</b></span></a>
+    <nav>
+      <a href="#/home" data-view="home" class="on">Home<span class="gw" id="railGw"></span></a>
+      <a href="#/leagues" data-view="leagues">Leagues</a>
+      <a href="#/aside" data-view="aside">Aside</a>
+      <a href="#/analysis" data-view="analysis">Analysis</a>
+      <a href="#/profile" data-view="profile">Profile</a>
+    </nav>
+    <div class="foot">
+      <div class="who" id="whoName">Your team</div>
+      <div class="sub" id="whoSub"></div>
+      <button type="button" id="signout">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div id="band"></div>
+    <div class="sheet" id="page"></div>
+  </main>
+</div>
+
+<script>
+  /* 1. The Railway backend, no trailing slash.
+     2. The next FPL deadline in UTC, used only until the backend supplies one. */
+  window.CLASHD_API = "https://fplarena-backend-production.up.railway.app";
+  window.CLASHD_DEADLINE = "2026-10-10T10:00:00Z";
+</script>
+<script src="/app.js?v=12"></script>
+</body>
+</html>

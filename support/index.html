@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clashd support</title>
+<meta name="description" content="Help with your Clashd account, your scores or a competition.">
+<meta property="og:title" content="Clashd support">
+<meta property="og:description" content="Help with your Clashd account, your scores or a competition.">
+<meta property="og:type" content="website">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css?v=21">
+<link rel="canonical" href="https://playclashd.com/support/">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="/">
+      <img src="/logo.png" alt="Clashd">
+      <span class="word">Clash<b>d</b></span>
+    </a>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav"><a href="/how-it-works/">How it works</a><a href="/competitions/">Competitions</a><a href="/analysis/">Analysis</a><a href="/import/">Mini-leagues</a><a class="signin-link" href="/app/">Sign in</a><span class="soon">App coming soon</span></nav>
+  </div>
+</header>
+<div class="page-head"><div class="wrap">
+  <div class="kick">Support</div>
+  <h1>Support</h1>
+  <div class="when">One inbox, answered by the people who built it. admin@solvvspace.com</div>
+</div></div>
+<div class="wrap"><div class="prose">
+  <h2>My score looks wrong</h2>
+  <p>FPL pauses its data while matches are on, so scores can lag during a gameweek. Remember Clashd
+    records your net score after transfer costs: 42 points with one hit is 38 here. If it still looks
+    wrong once FPL has checked the gameweek, email us with your team name and the gameweek.</p>
+  <h2>I cannot find my team</h2>
+  <p>Search your team name in the app, or enter your FPL Team ID. You will find the ID on the official
+    FPL site: open the Points tab and look at the number in the address bar. We never need your FPL
+    password.</p>
+  <h2>Changing my team name or badge</h2>
+  <p>Your team name comes from FPL, so change it there and it follows. Your badge is chosen in
+    Profile.</p>
+  <h2>Notifications</h2>
+  <p>Each kind can be turned on or off in Profile. If nothing arrives, check Clashd is allowed to
+    send notifications in your phone's settings.</p>
+  <h2>Anything else</h2>
+  <p>Email <a href="mailto:admin@solvvspace.com">admin@solvvspace.com</a>. We are small and usually
+    reply within a day.</p>
+  <div class="note-box">
+    <h3>Responsible play</h3>
+    <p>Clashd is 18+ and every competition is free to enter, so you never stake your own money. You
+      can self-exclude at any time in Profile. If taking part is becoming harmful, email us and
+      consider contacting a responsible-gambling support organisation.</p>
+  </div>
+</div></div>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div class="col">
+        <h4>Play</h4>
+        <a href="/how-it-works/">How it works</a>
+        <a href="/competitions/">Competitions</a>
+        <a href="/how-to-play/">Rules</a>
+      </div>
+      <div class="col">
+        <h4>Products</h4>
+        <a href="/analysis/">Clashd Analysis</a>
+        <a href="/import/">Mini-leagues</a>
+      </div>
+      <div class="col">
+        <h4>Company</h4>
+        <a href="/support/">Support</a>
+        <a href="/terms/">Terms and conditions</a>
+        <a href="/privacy/">Privacy policy</a>
+        <a href="/delete-account/">Delete your account</a>
+      </div>
+    </div>
+    <div class="small">
+      Clashd is operated by SolvvSpace Ltd, Company No. 16153942, Bedford, England. 18+.<br>
+      Not affiliated with, endorsed by or connected to the Premier League, the Football Association
+      or the official Fantasy Premier League game. Fantasy Premier League data remains the property
+      of the Premier League.<br>
+      &copy; 2026 SolvvSpace Ltd
+    </div>
+  </div>
+</footer>
+<script>
+(function(){
+  var nav = document.querySelector('.nav'), btn = document.querySelector('.menu-btn');
+  if (btn) btn.addEventListener('click', function(){
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  document.querySelectorAll('#site-nav a').forEach(function(a){
+    a.addEventListener('click', function(){ nav.classList.remove('open'); });
+  });
+})();
+(function(){
+  var items = document.querySelectorAll('.rise');
+  if (!('IntersectionObserver' in window)){
+    for (var i=0;i<items.length;i++) items[i].classList.add('seen');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); } });
+  },{ rootMargin: '0px 0px -12% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
