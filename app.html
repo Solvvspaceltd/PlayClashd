@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=5">
+<link rel="stylesheet" href="app.css?v=8">
 </head>
 <body>
 
@@ -65,9 +65,11 @@
   <aside class="rail" id="rail">
     <a class="brand" href="index.html"><img src="logo.png" alt=""><span>Clash<b>d</b></span></a>
     <nav>
-      <a href="#/overview" data-view="overview" class="on">Overview</a>
-      <a href="#/gameweek" data-view="gameweek">Gameweek</a>
-      <a href="#/season" data-view="season">Season</a>
+      <a href="#/home" data-view="home" class="on">Home</a>
+      <a href="#/leagues" data-view="leagues">Leagues</a>
+      <a href="#/aside" data-view="aside">Aside</a>
+      <a href="#/analysis" data-view="analysis">Analysis</a>
+      <a href="#/profile" data-view="profile">Profile</a>
     </nav>
     <div class="foot">
       <div class="who" id="whoName">Your team</div>
@@ -80,8 +82,8 @@
     <header class="topbar">
       <button class="menu-toggle" type="button" id="menuBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
       <div>
-        <h1 id="viewTitle">Analysis</h1>
-        <div class="when" id="viewWhen">Loading your gameweek</div>
+        <h1 id="viewTitle">Clashd</h1>
+        <div class="when" id="viewWhen"></div>
       </div>
       <div class="count" id="count">
         <div class="seg"><div class="k">Days</div><div class="v" id="cDays">—</div></div>
@@ -102,6 +104,6 @@
   window.CLASHD_API = "https://fplarena-backend-production.up.railway.app";
   window.CLASHD_DEADLINE = "2026-10-10T10:00:00Z";
 </script>
-<script src="app.js?v=5"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

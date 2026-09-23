@@ -1,132 +1,88 @@
 /* ============================================================
    Clashd on the web
-   Sign in with the same account as the app, then read the same
-   endpoints the app reads. Where a field is not found in the
-   payload, the card falls back to sample numbers and says so,
-   so the page is never half-empty while the API settles.
+   Home, Leagues, Aside, Analysis and Profile, read from the same
+   endpoints the phone app uses. Real values only: anything the
+   API does not return shows as a dash, never as a made-up number.
    ============================================================ */
 (function () {
   'use strict';
 
-  // ── the only two things to set ───────────────────────────────
-  // 1. Railway backend, no trailing slash, e.g. "https://fplarena-backend-production.up.railway.app"
   var API = window.CLASHD_API || '';
-  // 2. Next FPL deadline, UK time. Used for the countdown until the backend supplies one.
-  var DEADLINE = window.CLASHD_DEADLINE || '2026-10-10T10:00:00Z';
-
   var TOKEN_KEY = 'clashd.token';
   var token = null;
   try { token = localStorage.getItem(TOKEN_KEY); } catch (e) { token = null; }
 
-  var state = { view: 'overview', live: false, data: null };
+  var VIEWS = ['home', 'leagues', 'aside', 'analysis', 'profile'];
+  var state = { view: 'home', mode: 'back', loading: true, error: null, d: {} };
 
-  // ── sample numbers, used only where the API gives us nothing ──
-  var SAMPLE = {
-    teamName: 'Your team',
-    division: 'Premier division',
-    gameweek: 6,
-    rating: 6.4, ratingLabel: 'Solid', percentile: 78,
-    efficiency: 87, bestXI: 90, swing: 34, rate: 52.3,
-    points: 78, raw: 82, hit: 4,
-    opponent: 'Nutmeg United', opponentPoints: 64, result: 'Won',
-    position: 2, divisionSize: 8,
-    platformAvg: 48, divisionAvg: 51, topAvg: 67,
-    form: [44, 52, 31, 58, 49, 61],
-    attribution: [['GK', 6], ['DEF', 18], ['MID', 34], ['FWD', 20]],
-    benchCost: 46, benchRank: '3rd in Premier', benchDivisionAvg: 32, benchBest: 18,
-    decisive: 'Captaining Palmer over Haaland cost 18 points.',
-    captains: [
-      { name: 'Haaland', fixture: 'MCI v BRE (H)', tag: 'Safe', kind: 'good', xp: '15.8' },
-      { name: 'Palmer', fixture: 'CHE v BOU (H)', tag: 'Gain', kind: 'gain', xp: '13.6' },
-      { name: 'Salah', fixture: 'LIV v EVE (A)', tag: 'Level', kind: 'flat', xp: '13.0' }
-    ],
-    chips: [['Bench Boost', '5 of 7'], ['Triple Captain', '4 of 7'], ['Free Hit', '6 of 7']],
-    season: { total: 312, rank: 2, of: 12, best: 78, bestGw: 6, worst: 31, worstGw: 3,
-              positions: [5, 4, 4, 3, 2, 2], won: 3, drawn: 1, lost: 1, pf: 289, pa: 254 }
-  };
+  var C = { green: '#0E7A3C', bright: '#35CE78', gold: '#E8B22E', red: '#BE3229',
+            grey: '#9FB3A8', dim: '#56675E' };
 
   // ── helpers ──────────────────────────────────────────────────
   function $(id) { return document.getElementById(id); }
-  function el(tag, attrs, html) {
-    var n = document.createElement(tag);
-    if (attrs) Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
-    if (html != null) n.innerHTML = html;
-    return n;
-  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-  // first defined value at any of the dotted paths
-  function pick(obj, paths, fallback) {
-    for (var i = 0; i < paths.length; i++) {
-      var v = obj, parts = paths[i].split('.'), ok = true;
-      for (var j = 0; j < parts.length; j++) {
-        if (v == null || typeof v !== 'object' || !(parts[j] in v)) { ok = false; break; }
-        v = v[parts[j]];
-      }
-      if (ok && v != null && v !== '') return v;
-    }
-    return fallback;
+  function has(v) { return v !== null && v !== undefined && v !== ''; }
+  function n(v, dash) { return has(v) && isFinite(Number(v)) ? Number(v) : (dash === undefined ? '—' : dash); }
+  function ordinal(v) {
+    if (!has(v) || !isFinite(Number(v))) return '—';
+    var i = Number(v), s = ['th', 'st', 'nd', 'rd'], k = i % 100;
+    return i + (s[(k - 20) % 10] || s[k] || s[0]);
   }
-  function num(v, d) { var n = Number(v); return isFinite(n) ? n : d; }
+  function plus(v) { return !isFinite(v) ? '' : (v >= 0 ? '+' : '−') + Math.abs(Math.round(v)); }
+  function card(inner, cls) { return '<div class="card' + (cls ? ' ' + cls : '') + '">' + inner + '</div>'; }
+  function lbl(t) { return '<div class="lbl">' + esc(t) + '</div>'; }
+  function kpi(v, unit, name, note) {
+    return card(lbl(name) + '<div class="v num">' + esc(v) + (unit ? '<small>' + esc(unit) + '</small>' : '') +
+      '</div>' + (note ? '<div class="note">' + esc(note) + '</div>' : ''), 'kpi');
+  }
+  function empty(msg) { return card('<div class="note" style="margin:0">' + esc(msg) + '</div>'); }
+  function rowsBox(html) { return '<div class="rows">' + html + '</div>'; }
+  function bar(pct, colour) {
+    return '<div class="bar"><i style="width:' + Math.max(0, Math.min(100, pct)) + '%;background:' + colour + '"></i></div>';
+  }
 
   // ── api ──────────────────────────────────────────────────────
   function api(path, opts) {
     opts = opts || {};
-    if (!API) return Promise.reject(new Error('no-api'));
+    if (!API) return Promise.reject(new Error('This site is not connected to the Clashd server yet.'));
     var headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = 'Bearer ' + token;
     var ctl = new AbortController();
-    var timer = setTimeout(function () { ctl.abort(); }, 15000);
+    var timer = setTimeout(function () { ctl.abort(); }, 20000);
     return fetch(API + path, {
-      method: opts.method || 'GET',
-      headers: headers,
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
-      signal: ctl.signal
+      method: opts.method || 'GET', headers: headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined, signal: ctl.signal
     }).then(function (r) {
       clearTimeout(timer);
       return r.text().then(function (t) {
         var body = null;
         try { body = t ? JSON.parse(t) : null; } catch (e) { body = null; }
         if (!r.ok) {
-          var msg = (body && (body.message || body.error)) || ('Request failed (' + r.status + ')');
-          var err = new Error(msg); err.status = r.status; throw err;
+          var err = new Error((body && (body.error || body.message)) || ('Request failed (' + r.status + ')'));
+          err.status = r.status; throw err;
         }
         return body;
       });
     });
   }
-  // try each path, keep the first that answers
-  function firstOf(paths) {
-    var i = 0;
-    function attempt() {
-      if (i >= paths.length) return Promise.resolve(null);
-      return api(paths[i++]).catch(function () { return attempt(); });
-    }
-    return attempt();
-  }
+  function soft(path) { return api(path).catch(function () { return null; }); }
 
   // ── sign in ──────────────────────────────────────────────────
-  function showError(msg) {
-    var box = $('loginErr');
-    box.textContent = msg;
-    box.classList.remove('hide');
-  }
+  function showError(msg) { var b = $('loginErr'); b.textContent = msg; b.classList.remove('hide'); }
 
   $('loginForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    var btn = $('loginBtn');
-    var email = $('email').value.trim();
-    var password = $('password').value;
+    var btn = $('loginBtn'), email = $('email').value.trim(), password = $('password').value;
     $('loginErr').classList.add('hide');
     if (!email || !password) { showError('Enter your email and password.'); return; }
-    if (!API) { showError('This site is not connected to the Clashd server yet.'); return; }
     btn.disabled = true; btn.textContent = 'Signing in';
     api('/api/auth/login', { method: 'POST', body: { email: email, password: password } })
       .then(function (res) {
-        var t = pick(res || {}, ['token', 'accessToken', 'jwt', 'data.token'], null);
+        var t = res && (res.token || res.accessToken || (res.data && res.data.token));
         if (!t) throw new Error('Signed in, but no session was returned.');
         token = t;
         try { localStorage.setItem(TOKEN_KEY, t); } catch (err) {}
@@ -142,10 +98,11 @@
   $('signout').addEventListener('click', function () {
     token = null;
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    state.d = {};
     $('shell').classList.add('hide');
     $('signin').classList.remove('hide');
     document.title = 'Clashd — sign in';
-    var btn = $('loginBtn'); btn.disabled = false; btn.textContent = 'Sign in';
+    var b = $('loginBtn'); b.disabled = false; b.textContent = 'Sign in';
   });
 
   $('menuBtn').addEventListener('click', function () { $('shell').classList.toggle('open'); });
@@ -154,253 +111,417 @@
   function start() {
     $('signin').classList.add('hide');
     $('shell').classList.remove('hide');
-    document.title = 'Clashd — your analysis';
+    document.title = 'Clashd';
+    state.loading = true; state.error = null;
     render();
     Promise.all([
-      firstOf(['/api/auth/me', '/api/users/me']),
-      firstOf(['/api/summary']),
-      firstOf(['/api/analysis/dashboard', '/api/analysis/overview', '/api/analysis'])
-    ]).then(function (parts) {
-      state.data = { me: parts[0], summary: parts[1], analysis: parts[2] };
-      state.live = !!(parts[0] || parts[1] || parts[2]);
+      api('/api/auth/me').catch(function (e) { throw e; }),
+      soft('/api/summary'), soft('/api/leagues'),
+      soft('/api/analysis'), soft('/api/analysis/plan'), soft('/api/notifications')
+    ]).then(function (r) {
+      state.d = { me: r[0], summary: r[1], leagues: r[2], analysis: r[3], plan: r[4], notes: r[5] };
+      state.loading = false;
       render();
-    }).catch(function () { render(); });
-  }
-
-  // ── view model: real values where we find them ───────────────
-  function model() {
-    var d = state.data || {}, me = d.me || {}, s = d.summary || {}, a = d.analysis || {};
-    var m = {};
-    m.teamName = pick(me, ['teamName', 'team.name', 'user.teamName', 'name'], SAMPLE.teamName);
-    m.division = pick(s, ['division.name', 'divisionName'], SAMPLE.division);
-    m.gameweek = num(pick(s, ['gameweek', 'currentGameweek', 'gw'], pick(a, ['gameweek'], SAMPLE.gameweek)), SAMPLE.gameweek);
-    m.points = num(pick(s, ['gameweekPoints', 'points', 'netPoints'], SAMPLE.points), SAMPLE.points);
-    m.hit = num(pick(s, ['hits', 'transferCost'], SAMPLE.hit), SAMPLE.hit);
-    m.raw = m.points + m.hit;
-    m.rating = num(pick(a, ['rating', 'overview.rating', 'score'], SAMPLE.rating), SAMPLE.rating);
-    m.ratingLabel = pick(a, ['ratingLabel', 'overview.label'], SAMPLE.ratingLabel);
-    m.percentile = num(pick(a, ['percentile', 'overview.percentile'], SAMPLE.percentile), SAMPLE.percentile);
-    m.efficiency = num(pick(a, ['efficiency', 'overview.efficiency'], SAMPLE.efficiency), SAMPLE.efficiency);
-    m.bestXI = num(pick(a, ['bestXI', 'overview.bestXI'], SAMPLE.bestXI), SAMPLE.bestXI);
-    m.swing = num(pick(a, ['consistency.swing', 'swing'], SAMPLE.swing), SAMPLE.swing);
-    m.rate = num(pick(a, ['seasonRate', 'rate'], SAMPLE.rate), SAMPLE.rate);
-    m.platformAvg = num(pick(a, ['platformAverage', 'averages.platform'], SAMPLE.platformAvg), SAMPLE.platformAvg);
-    m.divisionAvg = num(pick(a, ['divisionAverage', 'averages.division'], SAMPLE.divisionAvg), SAMPLE.divisionAvg);
-    m.topAvg = num(pick(a, ['topAverage', 'averages.top'], SAMPLE.topAvg), SAMPLE.topAvg);
-    m.form = pick(a, ['form', 'formSeries'], SAMPLE.form);
-    if (!Array.isArray(m.form) || !m.form.length) m.form = SAMPLE.form;
-    m.form = m.form.map(function (f) { return typeof f === 'object' ? num(f.points, 0) : num(f, 0); });
-    m.opponent = pick(s, ['fixture.opponentName', 'fixture.opponent'], SAMPLE.opponent);
-    m.opponentPoints = num(pick(s, ['fixture.opponentPoints', 'fixture.away'], SAMPLE.opponentPoints), SAMPLE.opponentPoints);
-    m.position = num(pick(s, ['division.position', 'position'], SAMPLE.position), SAMPLE.position);
-    m.divisionSize = num(pick(s, ['division.size', 'divisionSize'], SAMPLE.divisionSize), SAMPLE.divisionSize);
-    m.benchCost = num(pick(a, ['biggestLever.value', 'benchCost'], SAMPLE.benchCost), SAMPLE.benchCost);
-    m.decisive = pick(a, ['decisiveCall.text', 'decisive'], SAMPLE.decisive);
-    m.captains = SAMPLE.captains;
-    m.chips = SAMPLE.chips;
-    m.attribution = SAMPLE.attribution;
-    m.season = SAMPLE.season;
-    return m;
-  }
-
-  // ── pieces ───────────────────────────────────────────────────
-  function card(inner, cls) { return '<div class="card' + (cls ? ' ' + cls : '') + '">' + inner + '</div>'; }
-  function lbl(t) { return '<div class="lbl">' + esc(t) + '</div>'; }
-
-  function kpi(v, unit, name, note) {
-    return card(lbl(name) + '<div class="v num">' + esc(v) + (unit ? '<small>' + esc(unit) + '</small>' : '') +
-      '</div><div class="note">' + esc(note) + '</div>', 'kpi');
-  }
-
-  function scale(m) {
-    var lo = 20, hi = 90, at = function (v) { return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100)); };
-    var narrow = window.innerWidth < 780;
-    var marks = [
-      { n: (narrow ? 'Clashd ' : 'Every Clashd manager ') + m.platformAvg, v: m.platformAvg, c: '#7C8B83', me: false },
-      { n: (narrow ? 'Division ' : 'Your division ') + m.divisionAvg, v: m.divisionAvg, c: '#0E7A3C', me: false },
-      { n: 'You ' + m.points, v: m.points, c: '#35CE78', me: true },
-      { n: (narrow ? 'Top 30 ' : 'Top 30 in form ') + m.topAvg, v: m.topAvg, c: '#E8B22E', me: false }
-    ];
-    var h = '<div class="scale"><div class="track"></div>';
-    var low = 0;
-    marks.sort(function (a, b) { return a.v - b.v; }).forEach(function (k) {
-      var cls = k.me ? 'me' : 'other' + (low++ % 2 ? ' low' : '');
-      h += '<div class="mark" style="left:' + at(k.v) + '%;background:' + k.c + '"></div>' +
-        '<div class="tag ' + cls + '" style="left:' + at(k.v) + '%">' + esc(k.n) + '</div>';
+    }).catch(function (err) {
+      if (err && err.status === 401) {
+        token = null;
+        try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+        $('shell').classList.add('hide'); $('signin').classList.remove('hide');
+        showError('Your session has expired. Sign in again.');
+        return;
+      }
+      state.loading = false;
+      state.error = (err && err.message) || 'Could not reach the Clashd server.';
+      render();
     });
-    h += '</div><div class="axis"><span>' + lo + '</span><span>' + ((lo + hi) / 2) + '</span><span>' + hi + '</span></div>';
-    return card(lbl('Where you sat this week') + h);
   }
 
-  function formChart(m) {
-    var max = Math.max.apply(null, m.form.concat([1]));
-    var h = '<div class="formbars">';
-    m.form.forEach(function (v, i) {
-      var up = i > 0 && v >= m.form[i - 1];
-      var start = m.gameweek - m.form.length + 1;
-      h += '<div class="b"><div class="n num">' + v + '</div><i class="' + (up ? 'up' : '') +
-        '" style="height:' + Math.round(v / max * 150) + 'px"></i><div class="g">GW' + (start + i) + '</div></div>';
-    });
-    h += '</div><div class="note">Green means up on the week before.</div>';
-    return card(lbl('Form, last ' + m.form.length + ' gameweeks') + h);
-  }
+  // ── home ─────────────────────────────────────────────────────
+  function viewHome() {
+    var s = state.d.summary || {}, p = state.d.plan || {}, a = state.d.analysis || {};
+    var f = s.nextFixture || {}, m = (p.match || {});
+    var net = has(s.gameweekPoints) ? s.gameweekPoints : null;
+    var hits = n(s.hits, 0);
 
-  function fixture(m) {
-    var won = m.points > m.opponentPoints;
-    return '<div class="fixture"><div class="lbl" style="color:#35CE78">Your fixture</div>' +
-      '<div class="teams"><div><div class="nm">' + esc(m.teamName) + '</div><div class="sc num">' + m.points + '</div></div>' +
-      '<div class="mid">FT</div>' +
-      '<div><div class="nm">' + esc(m.opponent) + '</div><div class="sc away num">' + m.opponentPoints + '</div></div></div>' +
-      '<div class="line">' + (won ? 'Three points. ' : '') + 'You sit ' + ordinal(m.position) + ' of ' +
-      m.divisionSize + ' in ' + esc(m.division.replace(' division', '')) + '.</div></div>';
-  }
-
-  function ordinal(n) {
-    var s = ['th', 'st', 'nd', 'rd'], v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  }
-
-  function captains(m) {
-    var rows = m.captains.map(function (c) {
-      return '<div class="row"><div class="who"><b>' + esc(c.name) + '</b><small>' + esc(c.fixture) + '</small></div>' +
-        '<span class="chip ' + c.kind + '">' + esc(c.tag) + '</span><div class="xp num">' + esc(c.xp) + '</div></div>';
-    }).join('');
-    return card(lbl('Captain, next gameweek') + '<div class="rows">' + rows + '</div>' +
-      '<div class="tiny" style="margin-top:10px">Safe protects a lead. Gain is the one your opponent does not own.</div>');
-  }
-
-  function chips(m) {
-    var rows = m.chips.map(function (c) {
-      return '<div class="row"><div class="who"><b>' + esc(c[0]) + '</b></div><div class="xp num" style="font-size:18px">' + esc(c[1]) + '</div></div>';
-    }).join('');
-    return card(lbl('Chips your rivals hold') + '<div class="rows">' + rows + '</div>');
-  }
-
-  function sampleChip() {
-    return state.live ? '' :
-      '<div class="card" style="border-color:rgba(232,178,46,.5)"><span class="chip sample">Sample data</span>' +
-      '<div class="note">Not connected to the Clashd server yet, so these are illustrative figures in the real layout.</div></div>';
-  }
-
-  // ── views ────────────────────────────────────────────────────
-  function viewOverview(m) {
-    var left = '<div class="kpis">' +
-      kpi(m.rating, '/ 10', 'Gameweek rating', m.ratingLabel + '. Above ' + m.percentile + '% of Clashd') +
-      kpi(m.efficiency, '%', 'Efficiency', 'Of the best XI your fifteen could have produced') +
-      kpi(ordinal(m.percentile), '', 'Percentile', 'Among every Clashd manager this week') +
-      kpi(m.rate, '', 'Season rate', 'Points per gameweek played') + '</div>' +
-      scale(m) + formChart(m) +
-      card(lbl('The call that decided it') + '<h3>' + esc(m.decisive) + '</h3>' +
-        '<div class="note">Your bench has cost ' + m.benchCost + ' this season, ' + SAMPLE.benchRank + '.</div>' +
-        '<div class="bar" style="margin-top:14px"><i style="width:' +
-        Math.round(m.benchCost / Math.max(m.benchCost, SAMPLE.benchDivisionAvg) * 100) + '%;background:#E8B22E"></i></div>' +
-        '<div class="tiny" style="margin-top:8px">Division average ' + SAMPLE.benchDivisionAvg +
-        ', best in Premier ' + SAMPLE.benchBest + '.</div>');
-    var right = fixture(m) + captains(m) + chips(m) + sampleChip();
-    return { left: left, right: right, title: 'Analysis', when: 'Gameweek ' + m.gameweek + ', final' };
-  }
-
-  function viewGameweek(m) {
-    var rows = [['You', m.points, '#35CE78', ''],
-                ['Your division average', m.divisionAvg, '#0E7A3C', plus(m.points - m.divisionAvg)],
-                ['Every Clashd manager', m.platformAvg, '#9FB3A8', plus(m.points - m.platformAvg)],
-                ['Top 30 in form', m.topAvg, '#E8B22E', plus(m.points - m.topAvg)]];
-    var max = Math.max.apply(null, rows.map(function (r) { return r[1]; }));
-    var bars = rows.map(function (r) {
-      return '<div style="margin-top:14px"><div style="display:flex;align-items:baseline;gap:8px">' +
-        '<div style="flex:1;font-size:14px">' + esc(r[0]) + '</div>' +
-        '<div class="num" style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:700">' + r[1] + '</div>' +
-        '<div class="tiny" style="min-width:48px;text-align:right">' + esc(r[3]) + '</div></div>' +
-        '<div class="bar"><i style="width:' + Math.round(r[1] / max * 100) + '%;background:' + r[2] + '"></i></div></div>';
+    var formPills = (s.form || []).map(function (r) {
+      var col = r === 'W' ? C.green : r === 'L' ? C.red : C.dim;
+      return '<span class="pill" style="border-color:' + col + ';color:' + col + '">' + esc(r) + '</span>';
     }).join('');
 
-    var total = m.attribution.reduce(function (a, b) { return a + b[1]; }, 0);
-    var cols = ['#6F8A7C', '#2E7D55', '#0E7A3C', '#35CE78'];
-    var stack = m.attribution.map(function (a, i) {
-      return '<div style="width:' + (a[1] / total * 100) + '%;background:' + cols[i] + '"></div>';
+    var series = s.pointsSeries || [];
+    var max = Math.max.apply(null, series.map(function (x) { return x.points; }).concat([1]));
+    var bars = series.map(function (x) {
+      return '<div class="b"><div class="n num">' + n(x.points) + '</div>' +
+        '<i style="height:' + Math.round(x.points / max * 150) + 'px"></i>' +
+        '<div class="g">GW' + n(x.gameweek) + '</div></div>';
     }).join('');
-    var legend = m.attribution.map(function (a, i) {
-      return '<span><i style="background:' + cols[i] + '"></i>' + esc(a[0]) + ' ' + a[1] + '</span>';
-    }).join('');
-
-    var left = card(lbl('Gameweek ' + m.gameweek) +
-        '<div style="display:flex;align-items:baseline;gap:10px;margin-top:8px">' +
-        '<div class="num" style="font-family:\'Barlow Condensed\',sans-serif;font-size:56px;font-weight:800;line-height:1">' + m.points + '</div>' +
-        '<div class="note" style="margin:0">net, after your hit &middot; ' + m.raw + ' &minus; ' + m.hit + '</div></div>') +
-      card(lbl('How you compared') + bars) +
-      card(lbl('Where your points came from') + '<div class="stack">' + stack + '</div><div class="legend">' + legend + '</div>');
-    var right = fixture(m) +
-      card(lbl('Efficiency') + '<h3>' + m.efficiency + '%</h3>' +
-        '<div class="note">The best XI from the fifteen you already owned would have scored ' + m.bestXI +
-        '. You took ' + m.points + ' of it.</div>') + sampleChip();
-    return { left: left, right: right, title: 'Gameweek', when: 'Gameweek ' + m.gameweek + ', final' };
-  }
-
-  function plus(n) { return (n >= 0 ? '+' : '−') + Math.abs(Math.round(n)); }
-
-  function viewSeason(m) {
-    var s = m.season;
-    var w = 560, h = 180, n = s.positions.length;
-    var pts = s.positions.map(function (p, i) {
-      return (20 + i * ((w - 40) / (n - 1))).toFixed(0) + ',' + ((p - 1) / 7 * (h - 40) + 20).toFixed(0);
-    }).join(' ');
-    var dots = s.positions.map(function (p, i) {
-      return '<circle cx="' + (20 + i * ((w - 40) / (n - 1))).toFixed(0) + '" cy="' +
-        ((p - 1) / 7 * (h - 40) + 20).toFixed(0) + '" r="4.5" fill="#0E7A3C"></circle>';
-    }).join('');
-    var chart = '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;margin-top:12px" aria-label="Division position by gameweek">' +
-      '<line x1="20" y1="20" x2="' + (w - 20) + '" y2="20" stroke="#E6EEE9"></line>' +
-      '<line x1="20" y1="' + (h / 2) + '" x2="' + (w - 20) + '" y2="' + (h / 2) + '" stroke="#E6EEE9"></line>' +
-      '<line x1="20" y1="' + (h - 20) + '" x2="' + (w - 20) + '" y2="' + (h - 20) + '" stroke="#E6EEE9"></line>' +
-      '<polyline points="' + pts + '" fill="none" stroke="#0E7A3C" stroke-width="3" stroke-linejoin="round"></polyline>' + dots +
-      '<text x="' + (w - 16) + '" y="24" text-anchor="end" font-size="11" fill="#7C8B83">1st</text>' +
-      '<text x="' + (w - 16) + '" y="' + (h - 16) + '" text-anchor="end" font-size="11" fill="#7C8B83">8th</text></svg>';
 
     var left = '<div class="kpis">' +
-      kpi(s.total, '', 'Season points', 'Net of every hit') +
-      kpi(ordinal(s.rank), '', 'In your league', 'Of ' + s.of + ' managers') +
-      kpi(s.best, '', 'Best week', 'Gameweek ' + s.bestGw) +
-      kpi(s.worst, '', 'Worst week', 'Gameweek ' + s.worstGw) + '</div>' +
-      card(lbl('Your place in ' + m.division.replace(' division', '')) + chart) +
-      card(lbl('Head to head') + '<div class="split">' +
-        '<div><div class="n num" style="color:#0E7A3C">' + s.won + '</div><div class="k">Won</div></div>' +
-        '<div><div class="n num">' + s.drawn + '</div><div class="k">Drawn</div></div>' +
-        '<div><div class="n num" style="color:#BE3229">' + s.lost + '</div><div class="k">Lost</div></div></div>' +
-        '<div class="note">Points for <b>' + s.pf + '</b> &middot; points against <b>' + s.pa + '</b></div>');
-    var right = chips(m) +
-      card(lbl('Your biggest lever') + '<h3>The bench has cost you ' + m.benchCost + '</h3>' +
-        '<div class="note">' + SAMPLE.benchRank + '. Two points a week is the gap to top spot.</div>') + sampleChip();
-    return { left: left, right: right, title: 'Season', when: 'Through gameweek ' + m.gameweek };
+      kpi(n(net), '', 'Gameweek ' + n(s.currentGameweek), hits ? 'Net, after a ' + hits + ' point hit' : 'Net score') +
+      kpi(n(s.seasonPoints), '', 'Season', 'Points so far') +
+      kpi(ordinal(s.platformRank), '', 'On Clashd', has(s.rankMove) && s.rankMove !== 0
+        ? (s.rankMove > 0 ? 'Up ' + s.rankMove + ' this week' : 'Down ' + Math.abs(s.rankMove) + ' this week') : 'Across every manager') +
+      kpi(n(s.gameweekHigh), '', 'Weekly high', 'Best score on Clashd this week') + '</div>';
+
+    left += series.length ? card(lbl('Your season, gameweek by gameweek') +
+      '<div class="formbars">' + bars + '</div>' +
+      '<div class="note">Best ' + n((s.bestGw || {}).points) + ' in GW' + n((s.bestGw || {}).gameweek) +
+      ', worst ' + n((s.worstGw || {}).points) + ' in GW' + n((s.worstGw || {}).gameweek) +
+      ', average ' + n(s.avgPoints) + '.</div>') : '';
+
+    if (p.ready && m.opponent) {
+      left += card(lbl('Next gameweek, forecast') +
+        '<h3>' + esc(m.verdict || '') + '</h3>' +
+        '<div class="note">' + esc(m.detail || '') + '</div>' +
+        '<div class="split" style="margin-top:16px">' +
+        '<div><div class="n num">' + n(m.me) + '</div><div class="k">You, forecast</div></div>' +
+        '<div><div class="n num">' + n(m.winChance) + '%</div><div class="k">Win chance</div></div>' +
+        '<div><div class="n num">' + n(m.them) + '</div><div class="k">' + esc(m.opponent) + '</div></div></div>');
+    }
+
+    var right = '';
+    if (f.opponent) {
+      var live = f.live && (has(f.myScore) || has(f.opponentScore));
+      right += '<div class="fixture"><div class="lbl" style="color:#35CE78">Gameweek ' + n(f.gameweek) + ' &middot; ' + esc(f.division || '') + '</div>' +
+        '<div class="teams"><div><div class="nm">' + esc(s.team || 'You') + '</div>' +
+        '<div class="sc num">' + (live ? n(f.myScore) : '<span class="tbc">Not started</span>') + '</div></div>' +
+        '<div class="mid">' + (live ? 'LIVE' : 'v') + '</div>' +
+        '<div><div class="nm">' + esc(f.opponent) + '</div>' +
+        '<div class="sc away num">' + (live ? n(f.opponentScore) : '<span class="tbc">&nbsp;</span>') + '</div></div></div>' +
+        '<div class="line">Your form ' + (s.form || []).join(' ') + ' &middot; theirs ' + (f.opponentForm || []).join(' ') + '</div></div>';
+    }
+    if (a.stakes && a.stakes.message) {
+      right += card(lbl('What is at stake') + '<h3>' + esc(a.stakes.division || '') + '</h3>' +
+        '<div class="note">' + esc(a.stakes.message) + '</div>');
+    }
+    if (s.best && s.best.name) {
+      right += card(lbl('Your best competition') + '<h3>' + esc(s.best.name) + '</h3>' +
+        '<div class="note">' + ordinal(s.best.position) + ' with ' + n(s.best.total) + ' points.</div>');
+    }
+    if (p.captain && p.captain.pick) {
+      right += card(lbl('Captain for gameweek ' + n(p.gameweek)) +
+        '<h3>' + esc(p.captain.pick.name) + '</h3>' +
+        '<div class="note">' + esc(p.captain.pick.why || p.captain.reason || '') + '</div>');
+    }
+    if (formPills) right += card(lbl('Recent results') + '<div class="pills">' + formPills + '</div>');
+
+    return { left: left, right: right, title: 'Home', when: s.team ? esc(s.team) : '' };
+  }
+
+  // ── leagues ──────────────────────────────────────────────────
+  function viewLeagues() {
+    var s = state.d.summary || {}, all = state.d.leagues || [], a = state.d.analysis || {};
+    var mine = s.leagues || [];
+    if (!mine.length && !all.length) return { left: empty('No competitions found on your account.'), right: '', title: 'Leagues', when: '' };
+
+    var meta = {};
+    (all || []).forEach(function (l) { meta[l.id] = l; });
+
+    var rows = mine.map(function (l) {
+      var extra = meta[l.leagueId] || {};
+      var place = has(l.tablePosition) ? ordinal(l.tablePosition) + ' of ' + n(l.tableTotal) : ordinal(l.position) + ' of ' + n(l.total);
+      var delta = has(l.rankDelta) && l.rankDelta !== 0
+        ? '<span style="color:' + (l.rankDelta > 0 ? C.green : C.red) + '">' + (l.rankDelta > 0 ? '▲' : '▼') + Math.abs(l.rankDelta) + '</span>' : '';
+      return '<div class="row"><div class="who"><b>' + esc(l.name) + '</b>' +
+        '<small>' + (l.division ? esc(l.division) + ' division &middot; ' : '') +
+        (extra.prizeInfo ? 'Prize ' + esc(extra.prizeInfo) + ' &middot; ' : '') +
+        (has(extra.entryCount) ? extra.entryCount + ' managers' : '') + '</small></div>' +
+        '<div style="text-align:right;min-width:104px"><div style="font-weight:700">' + place + ' ' + delta + '</div>' +
+        '<small style="color:#7C8B83">' + n(l.leaguePoints ? l.leaguePoints : l.points) + ' pts</small></div></div>';
+    }).join('');
+
+    var left = card(lbl('Your competitions') + rowsBox(rows));
+
+    var notJoined = (all || []).filter(function (l) { return !l.joined; });
+    if (notJoined.length) {
+      left += card(lbl('Open to join') + rowsBox(notJoined.map(function (l) {
+        return '<div class="row"><div class="who"><b>' + esc(l.name) + '</b><small>' + esc(l.description || '') + '</small></div>' +
+          '<div class="tiny">' + n(l.entryCount) + ' in</div></div>';
+      }).join('')) + '<div class="tiny" style="margin-top:10px">Joining happens in the app.</div>');
+    }
+
+    var right = '';
+    if (a.stakes && a.stakes.message) {
+      right += card(lbl('Clashd Premier League') +
+        '<h3>' + esc(a.stakes.division || '') + ', ' + ordinal(a.stakes.position) + ' of ' + n(a.stakes.total) + '</h3>' +
+        '<div class="note">' + esc(a.stakes.message) + '</div>');
+    }
+    if (a.h2h && a.h2h.length) {
+      right += card(lbl('Head to head') + rowsBox(a.h2h.map(function (h) {
+        var res = h.w ? 'Won' : h.l ? 'Lost' : 'Drew';
+        var col = h.w ? C.green : h.l ? C.red : C.dim;
+        return '<div class="row"><div class="who"><b>' + esc(h.opponent) + '</b><small>' + n(h['for']) + ' &ndash; ' + n(h.against) + '</small></div>' +
+          '<div style="color:' + col + ';font-weight:700">' + res + '</div></div>';
+      }).join('')));
+    }
+    return { left: left, right: right, title: 'Leagues', when: mine.length + ' competitions' };
+  }
+
+  // ── aside ────────────────────────────────────────────────────
+  function viewAside() {
+    var p = state.d.plan || {}, sq = p.squad || {}, players = sq.players || [];
+    if (!players.length) {
+      return { left: empty('Your squad appears here once the next gameweek is forecast.'), right: '', title: 'Aside', when: '' };
+    }
+    var order = { GK: 0, DEF: 1, MID: 2, FWD: 3 };
+    var starters = players.filter(function (x) { return x.starter; })
+      .sort(function (x, y) { return (order[x.position] - order[y.position]) || (y.xp - x.xp); });
+    var bench = players.filter(function (x) { return !x.starter; });
+
+    function line(x) {
+      var flag = x.status && x.status !== 'a' ? '<span class="chip flat" style="color:' + C.red + ';border-color:' + C.red + '">Doubt</span>' : '';
+      var bits = [x.position, x.team, x.fixture].filter(function (y) { return has(y); }).map(esc);
+      return '<div class="row"><div class="who"><b>' + esc(x.name) + '</b><small>' + bits.join(' &middot; ') + '</small></div>' +
+        flag + '<div class="xp num">' + (has(x.xp) ? Number(x.xp).toFixed(1) : '—') + '</div></div>';
+    }
+
+    var left = card(lbl('Your eleven, forecast for gameweek ' + n(p.gameweek)) + rowsBox(starters.map(line).join('')) ) +
+      (bench.length ? card(lbl('Your bench') + rowsBox(bench.map(line).join(''))) : '');
+
+    var right = card(lbl('Squad strength') +
+      '<h3>' + n(sq.score) + ' / 100</h3>' +
+      '<div class="note">' + ordinal(sq.rank) + ' of ' + n(sq.of) + ' in your division.</div>' +
+      (sq.ahead && sq.ahead.length ? '<div class="tiny" style="margin-top:10px">Ahead of you: ' + esc(sq.ahead.join(', ')) + '</div>' : ''));
+    if (sq.weakest) {
+      right += card(lbl('Weakest link') + '<h3>' + esc(sq.weakest.name) + '</h3>' +
+        '<div class="note">' + esc(sq.weakest.team || '') + ' &middot; ' + n(sq.weakest.xp) +
+        ' expected over the run, ' + n(sq.weakest.pct) + '% of the best in his position.</div>');
+    }
+    right += card(lbl('Naming your seven') +
+      '<div class="note" style="margin-top:6px">Aside picks lock at the FPL deadline and are made in the app for now. ' +
+      'Picking from the web is the next thing we add.</div>');
+
+    return { left: left, right: right, title: 'Aside', when: 'Gameweek ' + n(p.gameweek) };
+  }
+
+  // ── analysis ─────────────────────────────────────────────────
+  function toggle() {
+    return '<div class="seg-toggle">' +
+      '<button type="button" data-mode="back" class="' + (state.mode === 'back' ? 'on' : '') + '">Look back</button>' +
+      '<button type="button" data-mode="ahead" class="' + (state.mode === 'ahead' ? 'on' : '') + '">Plan ahead</button></div>';
+  }
+
+  function viewAnalysisBack() {
+    var a = state.d.analysis || {}, d = a.dashboard || {};
+    if (!a.ready) return { left: empty('Your report appears once the gameweek has been scored.'), right: '', title: 'Analysis', when: '' };
+    var f = d.field || {}, e = d.efficiency || {}, c = d.consistency || {}, b = a.benchmarks || {};
+
+    var left = '<div class="kpis">' +
+      kpi(n(a.rating), '/ 10', 'Gameweek rating', 'Gameweek ' + n(a.reportGameweek)) +
+      kpi(n(e.pct), '%', 'Efficiency', 'You scored ' + n(e.actual) + ' of a possible ' + n(e.possible)) +
+      kpi(ordinal(d.percentile), '', 'Percentile', 'Among ' + n(f.managers) + ' Clashd managers') +
+      kpi(n(c.rate), '', 'Season rate', 'Points per gameweek, ' + esc(c.label || '')) + '</div>';
+
+    // where you sat
+    if (has(f.myScore)) {
+      var lo = Math.min(f.lowest, f.myScore), hi = Math.max(f.highest, f.myScore);
+      var span = Math.max(1, hi - lo);
+      var marks = [
+        { nm: 'Lowest ' + n(f.lowest), v: f.lowest, c: C.grey },
+        { nm: 'Clashd average ' + n(f.average), v: f.average, c: C.dim },
+        { nm: 'Division ' + n(b.divisionAvg), v: b.divisionAvg, c: C.green },
+        { nm: 'Top 30 ' + n(b.topAvg), v: b.topAvg, c: C.gold },
+        { nm: 'You ' + n(f.myScore), v: f.myScore, c: C.bright, me: true },
+        { nm: 'Highest ' + n(f.highest), v: f.highest, c: C.grey }
+      ].filter(function (k) { return has(k.v); }).sort(function (x, y) { return x.v - y.v; });
+      var h = '<div class="scale"><div class="track"></div>', low = 0;
+      marks.forEach(function (k) {
+        var at = (k.v - lo) / span * 100;
+        h += '<div class="mark" style="left:' + at + '%;background:' + k.c + '"></div>' +
+          '<div class="tag ' + (k.me ? 'me' : 'other' + (low++ % 2 ? ' low' : '')) + '" style="left:' + at + '%">' + esc(k.nm) + '</div>';
+      });
+      h += '</div><div class="axis"><span>' + n(lo) + '</span><span>' + n(hi) + '</span></div>';
+      left += card(lbl('Where you sat in gameweek ' + n(a.reportGameweek)) + h);
+    }
+
+    if (d.form && d.form.length) {
+      var mx = Math.max.apply(null, d.form.map(function (x) { return Math.max(x.points, x.average); }).concat([1]));
+      left += card(lbl('You against the Clashd average') +
+        '<div class="formbars">' + d.form.map(function (x) {
+          return '<div class="b"><div class="n num">' + n(x.points) + '</div>' +
+            '<i class="' + (x.aboveAverage ? 'up' : '') + '" style="height:' + Math.round(x.points / mx * 150) + 'px"></i>' +
+            '<div class="g">GW' + n(x.gameweek) + '</div></div>';
+        }).join('') + '</div>' +
+        '<div class="note">Green is a week you beat the platform average.</div>');
+    }
+
+    if (d.attribution) {
+      var cols = { GK: '#6F8A7C', DEF: '#2E7D55', MID: C.green, FWD: C.bright };
+      var tot = Object.keys(d.attribution).reduce(function (t, k) { return t + d.attribution[k]; }, 0) || 1;
+      left += card(lbl('Where your points came from') +
+        '<div class="stack">' + Object.keys(d.attribution).map(function (k) {
+          return '<div style="width:' + (d.attribution[k] / tot * 100) + '%;background:' + cols[k] + '"></div>';
+        }).join('') + '</div>' +
+        '<div class="legend">' + Object.keys(d.attribution).map(function (k) {
+          return '<span><i style="background:' + cols[k] + '"></i>' + k + ' ' + d.attribution[k] + '</span>';
+        }).join('') + '</div>');
+    }
+
+    var right = '';
+    if (d.decisiveCall && d.decisiveCall.message) {
+      right += card(lbl('The call that decided it') + '<h3>' + esc(d.decisiveCall.message) + '</h3>' +
+        (d.leftBehind ? '<div class="note">Bench ' + n(d.leftBehind.bench) + ' &middot; captain ' +
+          n(d.leftBehind.captainMiss) + ' &middot; hits ' + n(d.leftBehind.hits) + '</div>' : ''));
+    }
+    if (a.lever) {
+      right += card(lbl('Your biggest lever') + '<h3>' + n(a.lever.benchTotal) + ' points on the bench</h3>' +
+        '<div class="note">' + esc(a.lever.message || '') + ' ' + ordinal(a.lever.rankInDivision) + ' of ' +
+        n(a.lever.divisionSize) + ' in your division.</div>');
+    }
+    if (c && has(c.swing)) {
+      right += card(lbl('Consistency') + '<h3>' + esc(c.label || '') + '</h3>' +
+        '<div class="note">Best ' + n(c.best) + ', worst ' + n(c.worst) + ', a swing of ' + n(c.swing) + '.</div>');
+    }
+    if (a.chips && a.chips.rivalsHolding) {
+      right += card(lbl('Chips your rivals hold') + rowsBox(a.chips.rivalsHolding.map(function (ch) {
+        return '<div class="row"><div class="who"><b>' + esc(ch.label) + '</b></div>' +
+          '<div class="xp num" style="font-size:18px">' + n(ch.count) + ' of ' + n(a.chips.rivalCount) + '</div></div>';
+      }).join('')));
+    }
+    return { left: left, right: right, title: 'Analysis', when: 'Gameweek ' + n(a.reportGameweek) + ', look back' };
+  }
+
+  function viewAnalysisAhead() {
+    var p = state.d.plan || {};
+    if (!p.ready) return { left: empty('The next gameweek has not been forecast yet.'), right: '', title: 'Analysis', when: '' };
+    var m = p.match || {}, cap = p.captain || {}, tr = p.transfers || {}, ch = p.chips || {};
+
+    var left = card(lbl('Gameweek ' + n(p.gameweek) + ' against ' + (m.opponent || '')) +
+      '<h3>' + esc(m.verdict || '') + '</h3>' +
+      '<div class="note">' + esc(m.detail || '') + '</div>' +
+      '<div class="split" style="margin-top:16px">' +
+      '<div><div class="n num">' + n(m.me) + '</div><div class="k">You</div></div>' +
+      '<div><div class="n num" style="color:' + C.green + '">' + n(m.winChance) + '%</div><div class="k">Win chance</div></div>' +
+      '<div><div class="n num">' + n(m.them) + '</div><div class="k">Them</div></div></div>' +
+      (m.sharedCount ? '<div class="tiny" style="margin-top:12px">You both own ' + n(m.sharedCount) +
+        ' players worth ' + n(m.sharedXp) + ' forecast points, which cancel out.</div>' : ''));
+
+    if (m.mine && m.mine.length) {
+      left += card(lbl('What decides it') +
+        '<div class="two-lists"><div>' + lbl('Yours alone') + rowsBox(m.mine.map(function (x) {
+          return '<div class="row"><div class="who"><b>' + esc(x.name) + '</b><small>' + esc(x.fixture || '') + '</small></div>' +
+            '<div class="xp num">' + n(x.xp) + '</div></div>';
+        }).join('')) + '</div><div>' + lbl('Theirs alone') + rowsBox((m.theirs || []).map(function (x) {
+          return '<div class="row"><div class="who"><b>' + esc(x.name) + '</b><small>' + esc(x.fixture || '') + '</small></div>' +
+            '<div class="xp num">' + n(x.xp) + '</div></div>';
+        }).join('')) + '</div></div>');
+    }
+
+    if (cap.list && cap.list.length) {
+      left += card(lbl('Captain') + '<div class="note" style="margin:6px 0 4px">' + esc(cap.reason || '') + '</div>' +
+        rowsBox(cap.list.map(function (x) {
+          var kind = x.tag === 'SAFE' ? 'good' : x.tag === 'GAIN' ? 'gain' : 'flat';
+          return '<div class="row"><div class="who"><b>' + esc(x.name) + '</b><small>' + esc(x.fixture || '') + '</small></div>' +
+            (x.tag ? '<span class="chip ' + kind + '">' + esc(x.tag) + '</span>' : '') +
+            '<div class="xp num">' + n(x.xp) + '</div></div>';
+        }).join('')));
+    }
+
+    var right = '';
+    if (tr.best && tr.best.out && tr.best['in']) {
+      right += card(lbl('Best transfer') +
+        '<h3>' + esc(tr.best.out.name) + ' to ' + esc(tr.best['in'].name) + '</h3>' +
+        '<div class="note">Gains ' + n(tr.best.gain) + ' over five gameweeks. ' +
+        (has(tr.best.cost) ? 'Costs ' + n(tr.best.cost) + 'm. ' : '') +
+        (has(tr.best.rivalsOwn) ? n(tr.best.rivalsOwn) + ' of your rivals already own him.' : '') + '</div>' +
+        (tr.hitVerdict ? '<div class="tiny" style="margin-top:10px"><b>Hit?</b> ' + esc(tr.hitVerdict) + '</div>' : '') +
+        '<div class="tiny" style="margin-top:8px">Bank ' + n(tr.bank) + 'm &middot; ' + n(tr.freeTransfers) + ' free</div>');
+    }
+    if (ch.mine && ch.mine.length) {
+      right += card(lbl('Chips') + rowsBox(ch.mine.map(function (x) {
+        return '<div class="row"><div class="who"><b>' + esc(x.label) + '</b></div>' +
+          '<div class="tiny">' + (x.available ? 'Held' : 'Used') + '</div></div>';
+      }).join('')) + (typeof ch.risk === 'string' ? '<div class="note">' + esc(ch.risk) + '</div>' : ''));
+    }
+    if (p.squad) {
+      right += card(lbl('Squad outlook') + '<h3>' + n(p.squad.score) + ' / 100</h3>' +
+        '<div class="note">' + ordinal(p.squad.rank) + ' of ' + n(p.squad.of) + ' in your division.</div>');
+    }
+    return { left: left, right: right, title: 'Analysis', when: 'Gameweek ' + n(p.gameweek) + ', plan ahead' };
+  }
+
+  function viewAnalysis() {
+    var v = state.mode === 'ahead' ? viewAnalysisAhead() : viewAnalysisBack();
+    v.left = toggle() + v.left;
+    return v;
+  }
+
+  // ── profile ──────────────────────────────────────────────────
+  function viewProfile() {
+    var me = state.d.me || {}, s = state.d.summary || {}, notes = state.d.notes || [];
+    var left = card(lbl('Your account') +
+      '<h3>' + esc(me.displayName || '') + '</h3>' +
+      rowsBox(
+        row('Email', me.email) +
+        row('FPL team', me.fplTeamName) +
+        row('FPL Team ID', me.fplTeamId) +
+        row('Linked', me.fplVerifiedAt ? new Date(me.fplVerifiedAt).toLocaleDateString('en-GB') : 'Not linked') +
+        row('Season points', me.totalPoints) +
+        row('Clashd rank', ordinal(me.platformRank)) +
+        (me.role === 'ADMIN' ? row('Role', 'Admin') : '')
+      ));
+
+    if (notes && notes.length) {
+      left += card(lbl('Recent alerts') + rowsBox(notes.slice(0, 8).map(function (x) {
+        return '<div class="row"><div class="who"><b>' + esc(x.title || '') + '</b><small>' + esc(x.body || '') + '</small></div>' +
+          '<div class="tiny">' + (x.createdAt ? new Date(x.createdAt).toLocaleDateString('en-GB') : '') + '</div></div>';
+      }).join('')));
+    }
+
+    var right = card(lbl('Notifications and settings') +
+      '<div class="note" style="margin-top:6px">Alert settings, your badge and account deletion live in the app. ' +
+      'The web app is read-only for now.</div>') +
+      card(lbl('Session') + '<div class="note" style="margin-top:6px">Signed in on this browser. ' +
+        'Use Sign out in the corner to end it.</div>');
+    return { left: left, right: right, title: 'Profile', when: esc(s.team || me.fplTeamName || '') };
+  }
+  function row(k, v) {
+    return '<div class="row"><div class="who"><b>' + esc(k) + '</b></div><div class="tiny">' + esc(has(v) ? v : '—') + '</div></div>';
   }
 
   // ── render ───────────────────────────────────────────────────
   function render() {
-    var m = model();
-    var v = state.view === 'gameweek' ? viewGameweek(m) : state.view === 'season' ? viewSeason(m) : viewOverview(m);
+    var v;
+    if (state.loading) v = { left: empty('Loading your gameweek.'), right: '', title: 'Clashd', when: '' };
+    else if (state.error) v = { left: card(lbl('Could not load') + '<div class="note">' + esc(state.error) + '</div>'), right: '', title: 'Clashd', when: '' };
+    else if (state.view === 'leagues') v = viewLeagues();
+    else if (state.view === 'aside') v = viewAside();
+    else if (state.view === 'analysis') v = viewAnalysis();
+    else if (state.view === 'profile') v = viewProfile();
+    else v = viewHome();
+
     $('viewTitle').textContent = v.title;
-    $('viewWhen').textContent = v.when;
-    $('whoName').textContent = m.teamName;
-    $('whoSub').textContent = m.division;
+    $('viewWhen').innerHTML = v.when || '';
+    var me = state.d.me || {}, s = state.d.summary || {};
+    $('whoName').textContent = s.team || me.fplTeamName || 'Your team';
+    $('whoSub').textContent = me.displayName || '';
+
     var page = $('page');
-    page.innerHTML = '';
-    page.appendChild(el('div', { 'class': 'col' }, v.left));
-    page.appendChild(el('div', { 'class': 'col' }, v.right));
+    page.innerHTML = '<div class="col">' + v.left + '</div><div class="col">' + (v.right || '') + '</div>';
+
     Array.prototype.forEach.call(document.querySelectorAll('.rail nav a'), function (a) {
       a.classList.toggle('on', a.getAttribute('data-view') === state.view);
     });
+    Array.prototype.forEach.call(document.querySelectorAll('.seg-toggle button'), function (b) {
+      b.addEventListener('click', function () { state.mode = b.getAttribute('data-mode'); render(); });
+    });
+    tick();
   }
 
   function route() {
     var h = (location.hash || '').replace('#/', '');
-    state.view = ['overview', 'gameweek', 'season'].indexOf(h) >= 0 ? h : 'overview';
+    state.view = VIEWS.indexOf(h) >= 0 ? h : 'home';
+    if (state.view === 'analysis' && state.d.analysis && state.d.analysis.defaultMode === 'plan') state.mode = 'ahead';
     $('shell').classList.remove('open');
     if (!$('shell').classList.contains('hide')) render();
   }
   window.addEventListener('hashchange', route);
 
-  // ── deadline countdown ───────────────────────────────────────
+  // ── countdown, from the deadline the backend gives us ────────
   function tick() {
-    var ms = new Date(DEADLINE).getTime() - Date.now();
+    var p = state.d.plan || {};
+    var dl = p.deadline || window.CLASHD_DEADLINE;
+    var ms = new Date(dl).getTime() - Date.now();
     if (!isFinite(ms)) return;
     if (ms < 0) ms = 0;
     var mins = Math.floor(ms / 60000);
@@ -408,10 +529,8 @@
     $('cHrs').textContent = String(Math.floor(mins % 1440 / 60)).padStart(2, '0');
     $('cMin').textContent = String(mins % 60).padStart(2, '0');
   }
-  tick();
   setInterval(tick, 30000);
 
-  // ── go ───────────────────────────────────────────────────────
   route();
   if (token) start();
 })();
