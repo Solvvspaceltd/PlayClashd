@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=8">
+<link rel="stylesheet" href="app.css?v=12">
 </head>
 <body>
 
@@ -27,6 +27,7 @@
       <p>Your division, your fixture and your analysis, on a bigger screen.</p>
     </div>
     <div class="mini" aria-hidden="true">
+      <div class="cap">Premier division</div>
       <div class="row"><i>1</i><em>Sunday Legends</em><b>12</b></div>
       <div class="row me"><i>2</i><em>Your team</em><b>10</b></div>
       <div class="row"><i>3</i><em>Nutmeg United</em><b>9</b></div>
@@ -62,10 +63,13 @@
 
 <!-- ─────────────────────────── the app ─────────────────────────── -->
 <div class="shell hide" id="shell">
+  <button class="menu-toggle" type="button" id="menuBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+  <div class="scrim" id="scrim"></div>
+
   <aside class="rail" id="rail">
     <a class="brand" href="index.html"><img src="logo.png" alt=""><span>Clash<b>d</b></span></a>
     <nav>
-      <a href="#/home" data-view="home" class="on">Home</a>
+      <a href="#/home" data-view="home" class="on">Home<span class="gw" id="railGw"></span></a>
       <a href="#/leagues" data-view="leagues">Leagues</a>
       <a href="#/aside" data-view="aside">Aside</a>
       <a href="#/analysis" data-view="analysis">Analysis</a>
@@ -73,37 +77,23 @@
     </nav>
     <div class="foot">
       <div class="who" id="whoName">Your team</div>
-      <div class="sub" id="whoSub">Premier division</div>
+      <div class="sub" id="whoSub"></div>
       <button type="button" id="signout">Sign out</button>
     </div>
   </aside>
 
-  <div>
-    <header class="topbar">
-      <button class="menu-toggle" type="button" id="menuBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
-      <div>
-        <h1 id="viewTitle">Clashd</h1>
-        <div class="when" id="viewWhen"></div>
-      </div>
-      <div class="count" id="count">
-        <div class="seg"><div class="k">Days</div><div class="v" id="cDays">—</div></div>
-        <div class="seg"><div class="k">Hrs</div><div class="v" id="cHrs">—</div></div>
-        <div class="seg"><div class="k">Min</div><div class="v" id="cMin">—</div></div>
-        <div class="seg" style="text-align:left"><div class="k">Until</div><div class="v" style="font-size:15px">Deadline</div></div>
-      </div>
-    </header>
-
-    <main class="page" id="page"></main>
-  </div>
+  <main class="main">
+    <div id="band"></div>
+    <div class="sheet" id="page"></div>
+  </main>
 </div>
 
 <script>
-  /* Set these two, then the page runs on live data.
-     1. Your Railway backend, no trailing slash.
-     2. The next FPL deadline in UTC, until the backend supplies one. */
+  /* 1. The Railway backend, no trailing slash.
+     2. The next FPL deadline in UTC, used only until the backend supplies one. */
   window.CLASHD_API = "https://fplarena-backend-production.up.railway.app";
   window.CLASHD_DEADLINE = "2026-10-10T10:00:00Z";
 </script>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>
