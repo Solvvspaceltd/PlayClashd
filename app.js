@@ -290,17 +290,24 @@
     }
 
     /* the sheet */
+    /* Two figures, not four. Season total and the week's high are context, so
+       they belong in the sentence underneath rather than competing for the eye. */
+    var move = has(s.rankMove) && s.rankMove !== 0
+      ? (s.rankMove > 0 ? 'up ' + s.rankMove + ' this week' : 'down ' + Math.abs(s.rankMove) + ' this week')
+      : 'across every manager';
+    var context = has(s.seasonPoints)
+      ? n(s.seasonPoints) + ' points for the season' +
+        (has(s.gameweekHigh)
+          ? ', and the best anyone on Clashd managed this week was ' + n(s.gameweekHigh) + '.'
+          : '.')
+      : '';
+
     var body = sec('This week', figs([
       { v: n(s.gameweekPoints), k: 'Gameweek ' + n(s.currentGameweek),
         note: hits ? 'Net, after a ' + hits + ' point hit' : 'Net score' },
-      { v: n(s.seasonPoints), k: 'Season', note: 'Points so far' },
       { v: ordinal(s.platformRank), k: 'On Clashd',
-        up: has(s.rankMove) && s.rankMove > 0,
-        note: has(s.rankMove) && s.rankMove !== 0
-          ? (s.rankMove > 0 ? 'Up ' + s.rankMove + ' this week' : 'Down ' + Math.abs(s.rankMove) + ' this week')
-          : 'Across every manager' },
-      { v: n(s.gameweekHigh), k: 'Weekly high', note: 'Best score on Clashd this week' }
-    ]));
+        up: has(s.rankMove) && s.rankMove > 0, note: move }
+    ]) + (context ? '<p class="note">' + esc(context) + '</p>' : ''));
 
     var series = s.pointsSeries || [];
     if (series.length) {
@@ -335,28 +342,90 @@
 
     var mine2 = s.leagues || [];
     if (mine2.length) {
-      body += sec('Your competitions', table(
-        [{ t: '', w: '38px' }, { t: 'Competition' }, { t: 'Field', r: true }, { t: 'Points', r: true }],
-        mine2.slice(0, 6).map(leagueRow).join('')),
+      body += sec('Your competitions', mine2.slice(0, 6).map(leagueRow).join(''),
         mine2.length > 6 ? '<a href="#/leagues">All ' + mine2.length + '</a>' : '');
     }
 
     return { band: band, body: body, title: 'Home' };
   }
 
+  /**
+   * One competition. "1st of 9" is a single fact so it is a single object, and
+   * the score carries the name of its own unit — captain points and green
+   * arrows sharing a column headed "Points" is what made this page unreadable.
+   */
   function leagueRow(l) {
     var place = has(l.tablePosition) ? l.tablePosition : l.position;
     var of = has(l.tableTotal) ? l.tableTotal : l.total;
     var delta = has(l.rankDelta) && l.rankDelta !== 0
       ? '<span class="dl ' + (l.rankDelta > 0 ? 'up' : 'dn') + '">' +
-        (l.rankDelta > 0 ? '+' : '−') + Math.abs(l.rankDelta) + '</span>' : '';
-    var pts = has(l.leaguePoints) && l.leaguePoints ? l.leaguePoints : l.points;
-    return '<tr' + (Number(place) === 1 ? ' class="lead"' : '') + '>' +
-      '<td class="pos">' + n(place) + '</td>' +
-      '<td><span class="nm">' + esc(l.name) + '</span>' +
-      (l.division ? '<span class="sub">' + esc(l.division) + ' division</span>' : '') + '</td>' +
-      '<td class="r"><span class="v q">of ' + n(of) + '</span>' + delta + '</td>' +
-      '<td class="r"><span class="v">' + n(pts) + '</span></td></tr>';
+        (l.rankDelta > 0 ? '+' : '\u2212') + Math.abs(l.rankDelta) + '</span>' : '';
+    var usesTable = has(l.tablePosition);
+    var pts = usesTable ? l.leaguePoints : l.points;
+    var unit = usesTable ? 'league points' : unitFor(l, pts);
+    return '<div class="lg">' +
+      '<div class="place' + (Number(place) === 1 ? ' lead' : '') + '">' + ordinal(place) +
+      '<small>of ' + n(of) + '</small>' + delta + '</div>' +
+      '<div class="nm">' + esc(l.name) +
+      (l.division ? '<em>' + esc(l.division) + ' division</em>' : '') + '</div>' +
+      '<div class="score"><b>' + n(pts) + '</b><span>' + esc(unit) + '</span></div>' +
+      '</div>';
+  }
+
+  /** What this competition actually counts. The API names it; fall back by format. */
+  function unitFor(l, v) {
+    if (l.scoreLabel) {
+      var s = String(l.scoreLabel).toLowerCase();
+      if (s === 'green arrows' && Math.abs(Number(v)) === 1) return 'green arrow';
+      return s;
+    }
+    switch (l.format) {
+      case 'CAPTAIN_POINTS': return 'captain points';
+      case 'NO_HITS':        return 'after hits';
+      case 'RANK_CLIMB':     return Math.abs(Number(v)) === 1 ? 'green arrow' : 'green arrows';
+      case 'TRANSFER_NET':   return 'net on transfers';
+      case 'SEVEN_ASIDE':
+      case 'FIVE_ASIDE':     return 'aside points';
+      default:               return 'season points';
+    }
+  }
+
+  /**
+   * How to report ownership across a list.
+   *
+   * Repeating the same fraction down eleven rows is texture. But one outlier
+   * should not force it back onto every row either — so the common case is
+   * stated once in words and only the exceptions are marked. Below that, the
+   * numbers vary enough to be worth reading and they all go back on.
+   */
+  function ownRule(counts, of) {
+    var tally = {};
+    counts.forEach(function (c) { tally[c] = (tally[c] || 0) + 1; });
+    var modal = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; })[0];
+    var share = tally[modal] / counts.length;
+    var m = Number(modal);
+    if (share < 0.6) return { perRow: true, said: '' };
+    return {
+      perRow: false,
+      modal: m,
+      said: m === 0
+        ? 'None of the ' + of + ' own any of these.'
+        : m + ' of the ' + of + ' own each of these.',
+    };
+  }
+
+  /** A shortlist drawn against its own best, so the spread is visible. */
+  function shortlist(rows, val, label, meta, kind) {
+    var top = Math.max.apply(null, rows.map(val).concat([1]));
+    return rows.map(function (x, i) {
+      var v = val(x);
+      return '<div class="sl' + (i === 0 ? ' best' : '') + (kind === 'warn' ? ' warn' : '') + '">' +
+        '<div class="r1"><span class="nm">' + esc(x.name) + '</span>' +
+        '<span class="meta">' + meta(x) + '</span>' +
+        '<span class="val">' + (Math.round(v * 10) / 10) + '</span></div>' +
+        '<div class="track"><i style="width:' + Math.max(3, v / top * 100).toFixed(0) + '%"></i></div>' +
+        '</div>';
+    }).join('') + (label ? '<div class="scale-note">' + esc(label) + '</div>' : '');
   }
 
   /* ── leagues ─────────────────────────────────────────────────── */
@@ -380,12 +449,14 @@
 
     var own = mine.filter(function (l) { return !l.imported; });
     var imported = mine.filter(function (l) { return l.imported; });
-    var cols = [{ t: '', w: '38px' }, { t: 'Competition' }, { t: 'Field', r: true }, { t: 'Points', r: true }];
+    var leading = mine.filter(function (l) {
+      return Number(has(l.tablePosition) ? l.tablePosition : l.position) === 1;
+    }).length;
 
     var body = '';
     if (own.length) {
-      body += sec('Clashd competitions', table(cols, own.map(leagueRow).join('')),
-        'Free to play, always');
+      body += sec('Clashd competitions', own.map(leagueRow).join(''),
+        leading ? 'Leading ' + leading + ' of ' + own.length : 'Free to play, always');
     }
 
     if (imported.length) {
@@ -394,7 +465,7 @@
         ? 'Club pass on ' + esc(covered.leagueName) + ' runs to ' +
           new Date(covered.activeUntil).toLocaleDateString('en-GB')
         : 'Kept running by a Club pass';
-      body += sec('Leagues you brought over', table(cols, imported.map(leagueRow).join('')), note);
+      body += sec('Leagues you brought over', imported.map(leagueRow).join(''), note);
     }
 
     if (!own.length && !imported.length) {
@@ -716,14 +787,34 @@
       '<td class="r"><span class="v">' + n(x.xp) + '</span></td></tr>';
   }
 
+  /**
+   * A signal. Ownership only appears when it varies across the list — eleven
+   * rows repeating the same fraction is texture, not information, so when it
+   * is constant it is said once in words instead.
+   */
   function signal(title, why, rows, kind) {
     if (!rows || !rows.length) {
       return '<div class="sig"><h4>' + esc(title) + '</h4><div class="why">' + esc(why) + '</div>' +
         '<p class="tiny">Nothing here this week.</p></div>';
     }
+    var w = state.d.pack.window;
+    var of = kind === 'below' ? (w.below || 1) : kind === 'above' ? (w.above || 1)
+           : ((w.above || 0) + (w.below || 0)) || 1;
+    var count = function (x) {
+      return kind === 'below' ? x.ownedBelow : kind === 'above' ? x.ownedAbove : x.ownedPack;
+    };
+    var rule = ownRule(rows.map(count), of);
+
     return '<div class="sig"><h4>' + esc(title) + '</h4><div class="why">' + esc(why) + '</div>' +
-      table([{ t: 'Player' }, { t: 'Owned', r: true }, { t: 'xP', r: true, w: '52px' }],
-        rows.map(function (x) { return packRow(x, kind); }).join('')) + '</div>';
+      (rule.said ? '<p class="tiny" style="margin-bottom:8px">' + esc(rule.said) + '</p>' : '') +
+      shortlist(rows, function (x) { return x.xp; },
+        'Forecast points, drawn against the best on this list',
+        function (x) {
+          var c = count(x);
+          var show = rule.perRow || c !== rule.modal;
+          return esc(x.pos) + ' \u00B7 ' + esc(x.team) + (show ? ' \u00B7 ' + c + ' of ' + of : '');
+        },
+        kind === 'below' ? 'warn' : '') + '</div>';
   }
 
   function viewPack() {
@@ -761,17 +852,38 @@
 
     /* the differential XI */
     var xi = p.xi || {};
+    var flat = ['GK', 'DEF', 'MID', 'FWD'].reduce(function (a, k) { return a.concat(xi[k] || []); }, []);
+    var xiRule = ownRule(flat.map(function (x) { return x.ownedAbove; }), above || 1);
+    var xiTop = Math.max.apply(null, flat.map(function (x) { return x.xp; }).concat([1]));
+
     var cols = ['GK', 'DEF', 'MID', 'FWD'].map(function (pos) {
       var list = xi[pos] || [];
       return '<div class="col">' + lbl(pos) + (list.length ? list.map(function (x, i) {
         return '<div class="p' + (i === 0 ? ' top' : '') + '">' +
           '<span class="nm">' + esc(x.name) + '</span>' +
           '<span class="meta"><span>' + esc(x.team) + '</span><b>' + n(x.xp) + '</b>' +
-          '<span>' + x.ownedAbove + '/' + (above || 1) + ' above</span></span></div>';
+          ((xiRule.perRow || x.ownedAbove !== xiRule.modal)
+            ? '<span>' + x.ownedAbove + ' of ' + (above || 1) + '</span>' : '') + '</span>' +
+          '<div class="track" style="height:4px;background:var(--rule-2);margin-top:5px">' +
+          '<i style="display:block;height:4px;width:' +
+          Math.max(4, x.xp / xiTop * 100).toFixed(0) + '%;background:' +
+          (i === 0 ? 'var(--gold)' : 'var(--green)') + '"></i></div>' +
+          '</div>';
       }).join('') : '<p class="tiny">Nothing rare enough.</p>') + '</div>';
     }).join('');
 
-    body += sec('The differential eleven', '<div class="xi">' + cols + '</div>',
+    /* The one fact worth stating, stated once rather than on every row. */
+    var xiSaid = '';
+    if (flat.length && xiRule.said) {
+      xiSaid = '<div class="said"><div class="big">' +
+        (xiRule.modal === 0
+          ? 'None of the ' + above + ' managers above you own any of these.'
+          : xiRule.modal + ' of the ' + above + ' above you own each of these.') +
+        '</div><div class="sub">Forecast points over the next six gameweeks, drawn against the ' +
+        'best available to you. Anyone they do own is marked.</div></div>';
+    }
+
+    body += sec('The differential eleven', xiSaid + '<div class="xi">' + cols + '</div>',
       'Rare among those above you, forecast well');
 
     body += sec('Read in both directions',

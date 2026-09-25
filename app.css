@@ -545,3 +545,48 @@ img{max-width:100%}
 .sig .tbl .nm{font-size:14px}
 .sig .tbl .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sig .tbl td{padding:7px 0}
+
+
+/* ==========================================================================
+   Anchored numbers. A figure appears only when something says what it is
+   relative to — a named unit, a place in a field, or a bar against the best.
+   ========================================================================== */
+
+/* a competition row: place is one object, score carries its own unit */
+.lg{border-bottom:1px solid var(--rule-2);padding:11px 0;display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:baseline}
+.lg:last-child{border-bottom:none}
+.lg .place{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:22px;
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.lg .place small{font-size:12.5px;color:var(--faint);font-weight:600;margin-left:3px}
+.lg .place.lead{color:var(--gold)}
+.lg .nm{font-weight:600;font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.lg .nm em{font-style:normal;display:block;font-size:12px;color:var(--faint);font-weight:400}
+.lg .score{text-align:right;white-space:nowrap}
+.lg .score b{font-family:"Barlow Condensed",sans-serif;font-size:21px;font-weight:800;
+  font-variant-numeric:tabular-nums}
+.lg .score span{display:block;font-size:11.5px;color:var(--faint);margin-top:-2px}
+.lg .dl{margin-left:6px}
+
+/* a shortlist: one number, drawn against the best in the list */
+.sl{border-bottom:1px solid var(--rule-2);padding:10px 0}
+.sl:last-child{border-bottom:none}
+.sl .r1{display:flex;align-items:baseline;gap:10px}
+.sl .nm{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sl .meta{font-size:12px;color:var(--faint);white-space:nowrap}
+.sl .val{margin-left:auto;font-family:"Barlow Condensed",sans-serif;font-size:19px;font-weight:800;
+  font-variant-numeric:tabular-nums}
+.sl .track{height:5px;background:var(--rule-2);margin-top:6px}
+.sl .track i{display:block;height:5px;background:var(--green)}
+.sl.best .track i{background:var(--gold)}
+.sl.warn .track i{background:var(--red)}
+.sl .chip-row{margin-left:8px}
+
+/* the thing worth saying, said once */
+.said{border-left:4px solid var(--gold);padding:3px 0 3px 16px;margin-bottom:14px}
+.said .big{font-family:"Barlow Condensed",sans-serif;font-size:clamp(19px,2.1vw,26px);font-weight:800;
+  line-height:1.1;text-transform:uppercase;text-wrap:balance}
+.said .sub{font-size:13.5px;color:var(--mute);margin-top:5px;max-width:66ch}
+
+.scale-note{font-size:12.5px;color:var(--faint);margin-top:10px}
