@@ -12,7 +12,7 @@
   var token = null;
   try { token = localStorage.getItem(TOKEN_KEY); } catch (e) { token = null; }
 
-  var VIEWS = ['home', 'leagues', 'aside', 'analysis', 'profile'];
+  var VIEWS = ['home', 'leagues', 'aside', 'analysis', 'news', 'profile'];
   var state = { view: 'home', mode: 'back', loading: true, error: null, d: {} };
 
   var C = { green: '#0E7A3C', live: '#35CE78', gold: '#E8B22E', red: '#BE3229',
@@ -101,6 +101,62 @@
   }
   function empty(msg) { return sec('Nothing yet', '<p>' + esc(msg) + '</p>'); }
 
+  /* ── what this account may see, and how that is shown ──────────────
+     The server reports source PREVIEW while Analysis is free for everyone.
+     That is not the same as having paid, so the padlock is shown either way
+     — people learn what is paid before it costs anything, and on the day the
+     preview ends nothing on screen changes. */
+  function ent() { return state.d.billing || {}; }
+  function paying() { var e = ent(); return !!e.pro && e.source !== 'PREVIEW'; }
+  function preview() { return ent().source === 'PREVIEW'; }
+
+  function lockBadge(text) {
+    return '<span class="lock-badge"><i></i>' + esc(text || 'Clashd Analysis') + '</span>';
+  }
+
+  /** Blurred behind glass: the shape is visible, the numbers are not. */
+  function veil(inner, head, body) {
+    return '<div class="veil"><div class="veil-inner">' + inner + '</div>' +
+      '<div class="veil-over">' + lockBadge('Clashd Analysis') +
+      '<h4>' + esc(head) + '</h4>' +
+      (body ? '<p>' + esc(body) + '</p>' : '') +
+      '<p class="tiny">Subscribe in the Clashd app to unlock.</p></div></div>';
+  }
+
+  /** The strip at the top of Analysis. Nothing at all once somebody pays. */
+  function sell() {
+    if (paying()) return '';
+    var e = ent();
+    var plans = e.plans || [];
+    var monthly = plans.filter(function (p) { return p.period === 'month'; })[0];
+    var yearly = plans.filter(function (p) { return p.period === 'year'; })[0];
+
+    if (preview()) {
+      return '<div class="sell"><div class="row" style="margin-top:0">' +
+        lockBadge('Clashd Analysis') +
+        '<div class="note" style="margin:0">Everything below is paid from launch. ' +
+        'It is open to everyone while Clashd is in preview, so have a proper look at it.</div>' +
+        '</div></div>';
+    }
+    return '<div class="sell">' + lockBadge('Clashd Analysis') +
+      '<h3>Every other tool ranks you against ten million strangers.</h3>' +
+      '<p>Clashd holds your division\u2019s data, so it answers the only question that decides ' +
+      'your week: what do they have that you do not?</p>' +
+      '<div class="row">' +
+      (monthly ? '<div class="price">' + esc(monthly.price) + '<small>/month</small></div>' : '') +
+      (yearly ? '<div class="price">' + esc(yearly.price) + '<small>/year</small></div>' : '') +
+      '<div class="note">Subscribe in the Clashd app. Your subscription follows your account here.</div>' +
+      '</div></div>';
+  }
+
+  /** How many of a sample hold him, drawn rather than written. */
+  function pips(on, total, warn) {
+    var cap = Math.min(total, 30), lit = Math.round(on / Math.max(1, total) * cap);
+    var out = '<span class="pips' + (warn ? ' warn' : '') + '">';
+    for (var i = 0; i < cap; i++) out += '<i class="' + (i < lit ? 'on' : '') + '"></i>';
+    return out + '</span>';
+  }
+
   /* ── api ─────────────────────────────────────────────────────── */
   function api(path, opts) {
     opts = opts || {};
@@ -174,9 +230,11 @@
     Promise.all([
       api('/api/auth/me'),
       soft('/api/summary'), soft('/api/leagues'),
-      soft('/api/analysis'), soft('/api/analysis/plan'), soft('/api/notifications')
+      soft('/api/analysis'), soft('/api/analysis/plan'), soft('/api/notifications'),
+      soft('/api/analysis/differentials'), soft('/api/billing/me'), soft('/api/news')
     ]).then(function (r) {
-      state.d = { me: r[0], summary: r[1], leagues: r[2], analysis: r[3], plan: r[4], notes: r[5] };
+      state.d = { me: r[0], summary: r[1], leagues: r[2], analysis: r[3], plan: r[4], notes: r[5],
+                  pack: r[6], billing: r[7], news: r[8] };
       state.loading = false;
       if (state.view === 'analysis' && state.d.analysis && state.d.analysis.defaultMode === 'plan') state.mode = 'ahead';
       render();
@@ -320,9 +378,44 @@
       { v: n(s.seasonPoints), k: 'Season points' }
     ]);
 
-    var body = sec('Every competition you are in', table(
-      [{ t: '', w: '38px' }, { t: 'Competition' }, { t: 'Field', r: true }, { t: 'Points', r: true }],
-      mine.map(leagueRow).join('')));
+    var own = mine.filter(function (l) { return !l.imported; });
+    var imported = mine.filter(function (l) { return l.imported; });
+    var cols = [{ t: '', w: '38px' }, { t: 'Competition' }, { t: 'Field', r: true }, { t: 'Points', r: true }];
+
+    var body = '';
+    if (own.length) {
+      body += sec('Clashd competitions', table(cols, own.map(leagueRow).join('')),
+        'Free to play, always');
+    }
+
+    if (imported.length) {
+      var covered = (ent().club || {});
+      var note = covered.leagueName
+        ? 'Club pass on ' + esc(covered.leagueName) + ' runs to ' +
+          new Date(covered.activeUntil).toLocaleDateString('en-GB')
+        : 'Kept running by a Club pass';
+      body += sec('Leagues you brought over', table(cols, imported.map(leagueRow).join('')), note);
+    }
+
+    if (!own.length && !imported.length) {
+      body += sec('Your competitions', '<p>You are not in any competitions yet.</p>');
+    }
+
+    if (!imported.length) {
+      body += sec('Bring your mini-league over',
+        '<div class="two"><div>' +
+        '<h3>Your lot already have a league. Give it a season.</h3>' +
+        '<p>Import your FPL mini-league and everyone in it gets a table, fixtures, promotion, ' +
+        'relegation and eight other ways to take the mick \u2014 off one code, with nobody ' +
+        're-entering anything.</p>' +
+        '<p class="note">Importing happens in the app. Free for the first two gameweeks, then one ' +
+        'Club pass keeps it running for the season.</p>' +
+        '</div><div>' +
+        inset('Club pass', 'One payment, the whole league',
+          'Bought once by anyone in the league, not per person. Priced by how many managers ' +
+          'actually joined, so nothing is wasted on people who never turned up.', '', 'gold') +
+        '</div></div>');
+    }
 
     if (a.h2h && a.h2h.length) {
       var won = a.h2h.filter(function (h) { return h.w; }).length;
@@ -415,9 +508,11 @@
 
   /* ── analysis ────────────────────────────────────────────────── */
   function toggle() {
-    return '<div class="seg-toggle">' +
-      '<button type="button" data-mode="back" class="' + (state.mode === 'back' ? 'on' : '') + '">Look back</button>' +
-      '<button type="button" data-mode="ahead" class="' + (state.mode === 'ahead' ? 'on' : '') + '">Plan ahead</button></div>';
+    var opts = [['back', 'Look back'], ['ahead', 'Plan ahead'], ['pack', 'The pack']];
+    return '<div class="seg-toggle">' + opts.map(function (o) {
+      return '<button type="button" data-mode="' + o[0] + '" class="' +
+        (state.mode === o[0] ? 'on' : '') + '">' + o[1] + '</button>';
+    }).join('') + '</div>';
   }
 
   function viewAnalysisBack() {
@@ -602,7 +697,145 @@
   }
 
   function viewAnalysis() {
+    if (state.mode === 'pack') return viewPack();
     return state.mode === 'ahead' ? viewAnalysisAhead() : viewAnalysisBack();
+  }
+
+  /* ── the pack: thirty above you, thirty below ─────────────────────── */
+
+  function packRow(x, kind) {
+    var count = kind === 'above' ? x.ownedAbove : kind === 'below' ? x.ownedBelow : x.ownedPack;
+    var of = kind === 'above' ? (state.d.pack.window.above || 1)
+           : kind === 'below' ? (state.d.pack.window.below || 1)
+           : ((state.d.pack.window.above || 0) + (state.d.pack.window.below || 0)) || 1;
+    return '<tr><td><span class="nm">' + esc(x.name) + '</span>' +
+      '<span class="sub">' + esc(x.pos) + ' &middot; ' + esc(x.team) +
+      ' &middot; &pound;' + n(x.price) + 'm</span></td>' +
+      '<td class="own r">' + pips(count, of, kind === 'below') +
+      '<span class="cnt">' + count + '/' + of + '</span></td>' +
+      '<td class="r"><span class="v">' + n(x.xp) + '</span></td></tr>';
+  }
+
+  function signal(title, why, rows, kind) {
+    if (!rows || !rows.length) {
+      return '<div class="sig"><h4>' + esc(title) + '</h4><div class="why">' + esc(why) + '</div>' +
+        '<p class="tiny">Nothing here this week.</p></div>';
+    }
+    return '<div class="sig"><h4>' + esc(title) + '</h4><div class="why">' + esc(why) + '</div>' +
+      table([{ t: 'Player' }, { t: 'Owned', r: true }, { t: 'xP', r: true, w: '52px' }],
+        rows.map(function (x) { return packRow(x, kind); }).join('')) + '</div>';
+  }
+
+  function viewPack() {
+    var p = state.d.pack;
+    var band = bandTop('Analysis', 'The pack',
+      'The thirty managers above you on Clashd and the thirty below, and what they own that you do not.', true) + toggle();
+
+    if (!p) {
+      return { band: band, body: sell() + sec('The pack',
+        '<p>This needs Clashd Analysis. Subscribe in the app and it appears here.</p>'), title: 'Analysis' };
+    }
+    if (p.ready === false) {
+      return { band: band, body: sell() + sec('The pack', '<p>' + esc(p.reason || '') + '</p>'), title: 'Analysis' };
+    }
+
+    var above = p.window.above || 0, below = p.window.below || 0, pack = above + below;
+    var thin = pack < 20;
+    var body = sell();
+
+    /* The headline. Held back while the sample is thin: a bold claim off five
+       squads reads as authority the data has not earned. */
+    if (p.headline && !thin) {
+      body += sec('What would separate you',
+        '<div class="headline"><div class="big">' + esc(p.headline.message) + '</div></div>',
+        'Gameweek ' + n(p.gameweek));
+    } else if (p.headline) {
+      body += sec('What would separate you',
+        '<div class="headline"><div class="big">' + esc(p.headline.player) +
+        ' is the widest margin open to you.</div>' +
+        '<div class="sub">Measured against ' + above + ' manager' + (above === 1 ? '' : 's') +
+        ' above you and ' + below + ' below. That is a small pack, so read this as a pointer rather ' +
+        'than a verdict \u2014 it sharpens as Clashd grows.</div></div>',
+        'Gameweek ' + n(p.gameweek));
+    }
+
+    /* the differential XI */
+    var xi = p.xi || {};
+    var cols = ['GK', 'DEF', 'MID', 'FWD'].map(function (pos) {
+      var list = xi[pos] || [];
+      return '<div class="col">' + lbl(pos) + (list.length ? list.map(function (x, i) {
+        return '<div class="p' + (i === 0 ? ' top' : '') + '">' +
+          '<span class="nm">' + esc(x.name) + '</span>' +
+          '<span class="meta"><span>' + esc(x.team) + '</span><b>' + n(x.xp) + '</b>' +
+          '<span>' + x.ownedAbove + '/' + (above || 1) + ' above</span></span></div>';
+      }).join('') : '<p class="tiny">Nothing rare enough.</p>') + '</div>';
+    }).join('');
+
+    body += sec('The differential eleven', '<div class="xi">' + cols + '</div>',
+      'Rare among those above you, forecast well');
+
+    body += sec('Read in both directions',
+      '<div class="three">' +
+      signal('Bleeding', 'The pack has him and you do not. Not clever, just costly \u2014 every week he returns you lose ground to almost everyone.', p.bleeding, 'pack') +
+      signal('Exposure', 'Common among those below you, not yours. This is how you get overtaken.', p.exposure, 'below') +
+      signal('Your edge', 'Already yours, and rare in the pack. You are ahead on these \u2014 hold or bank.', p.edge, 'pack') +
+      '</div>',
+      above + ' above &middot; ' + below + ' below');
+
+    return { band: band, body: body, title: 'Analysis' };
+  }
+
+  /* ── news ─────────────────────────────────────────────────────────── */
+
+  function viewNews() {
+    var d = state.d.news || {};
+    var items = d.items || [];
+    var band = bandTop('Newsroom', 'What changed',
+      'Clashd announcements and the Premier League fitness news that moves your squad.', true);
+
+    if (!items.length) {
+      return { band: band, body: sec('Newsroom', '<p>Nothing published yet.</p>'), title: 'News' };
+    }
+
+    var clashd = items.filter(function (x) { return x.kind === 'CLASHD'; });
+    var fpl = items.filter(function (x) { return x.kind === 'FPL'; });
+
+    var lead = clashd[0];
+    var left = '';
+    if (lead) {
+      left += '<div class="lede-item"><div class="kick">' +
+        '<span class="tag-chip good">' + esc(lead.category || 'Clashd') + '</span>' +
+        (lead.pinned ? '<span class="tag-chip gain">Pinned</span>' : '') + '</div>' +
+        '<h3>' + esc(lead.title) + '</h3>' +
+        (lead.body ? '<p>' + esc(lead.body) + '</p>' : '') + '</div>';
+    }
+    left += '<div class="feed">' + clashd.slice(1).map(function (x) {
+      return '<div class="item"><div class="bar clashd"></div><div>' +
+        '<div class="t">' + esc(x.title) + '</div>' +
+        (x.body ? '<div class="b">' + esc(x.body) + '</div>' : '') +
+        (x.createdAt ? '<div class="w">' + new Date(x.createdAt).toLocaleDateString('en-GB') + '</div>' : '') +
+        '</div></div>';
+    }).join('') + '</div>';
+    if (!clashd.length) left = '<p class="tiny">No Clashd posts yet.</p>';
+
+    /* Fitness news, ordered by how much it hurts: a ruled-out player first. */
+    var right = '<div class="feed">' + fpl.slice(0, 18).map(function (x) {
+      var c = has(x.chance) ? Number(x.chance) : null;
+      var bar = c === 0 ? 'out' : (c !== null && c < 100 ? 'doubt' : '');
+      var tag = c === 0 ? 'Out' : c !== null && c < 100 ? c + '% chance' : '';
+      return '<div class="item"><div class="bar ' + bar + '"></div><div>' +
+        '<div class="t">' + esc(x.title) + '</div>' +
+        (x.body ? '<div class="b">' + esc(x.body) + '</div>' : '') +
+        (tag ? '<div class="w">' + esc(tag) + '</div>' : '') +
+        '</div></div>';
+    }).join('') + '</div>';
+
+    var body = sec('From Clashd', '<div class="news"><div>' + left + '</div>' +
+      '<div>' + lbl('Fitness and availability') +
+      (d.fplAvailable === false ? '<p class="tiny">The Premier League feed is unavailable right now.</p>' : right) +
+      '</div></div>');
+
+    return { band: band, body: body, title: 'News' };
   }
 
   /* ── profile ─────────────────────────────────────────────────── */
@@ -657,6 +890,7 @@
     } else if (state.view === 'leagues') v = viewLeagues();
     else if (state.view === 'aside') v = viewAside();
     else if (state.view === 'analysis') v = viewAnalysis();
+    else if (state.view === 'news') v = viewNews();
     else if (state.view === 'profile') v = viewProfile();
     else v = viewHome();
 
