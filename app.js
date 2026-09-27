@@ -12,7 +12,7 @@
   var token = null;
   try { token = localStorage.getItem(TOKEN_KEY); } catch (e) { token = null; }
 
-  var VIEWS = ['home', 'leagues', 'aside', 'analysis', 'news', 'profile'];
+  var VIEWS = ['home', 'leagues', 'aside', 'analysis', 'news', 'profile', 'admin'];
   var state = { view: 'home', mode: 'back', loading: true, error: null, d: {} };
 
   var C = { green: '#0E7A3C', live: '#35CE78', gold: '#E8B22E', red: '#BE3229',
@@ -238,6 +238,14 @@
       state.loading = false;
       if (state.view === 'analysis' && state.d.analysis && state.d.analysis.defaultMode === 'plan') state.mode = 'ahead';
       render();
+      // Admin data is fetched after the first paint, and only for admins, so a
+      // player's sign-in never waits on endpoints they cannot use anyway.
+      if (isAdmin()) {
+        soft('/api/admin/stats').then(function (st) {
+          if (st) { state.d.adminStats = st; if (state.view === 'admin') render(); else render(); }
+        });
+        if (state.view === 'admin') loadAdminUsers();
+      }
     }).catch(function (err) {
       if (err && err.status === 401) {
         token = null;
@@ -992,6 +1000,454 @@
     return { band: band, body: body, title: 'Profile' };
   }
 
+  /* ── admin ───────────────────────────────────────────────────────
+     Admin-only. Nothing here is reachable without an ADMIN role on the
+     account, and the server enforces that independently — the nav link is
+     hidden as a courtesy, not as a control.
+
+     The interaction model is deliberately narrow. An admin's mistakes here
+     are other people's problems, so every punitive action needs a typed
+     reason, shows exactly what it will do before it does it, and is
+     reversible apart from purge, which says so plainly.
+     ─────────────────────────────────────────────────────────────── */
+
+  var STATUS_LABEL = {
+    ACTIVE: 'Active', SUSPENDED: 'Suspended', BLOCKED: 'Blocked', DELETED: 'Deleted'
+  };
+  var STATUS_KIND = {
+    ACTIVE: 'ok', SUSPENDED: 'warn', BLOCKED: 'bad', DELETED: 'off'
+  };
+
+  function isAdmin() { return (state.d.me || {}).role === 'ADMIN'; }
+
+  function adminState() {
+    if (!state.admin) {
+      state.admin = {
+        sub: 'users',      // users | audit
+        q: '',             // search text
+        status: 'LIVE',    // LIVE | ACTIVE | SUSPENDED | BLOCKED | DELETED | ALL
+        page: 1,
+        list: null,        // the page of users
+        sel: null,         // id of the open account
+        detail: null,      // that account in full
+        audit: null,
+        act: null,         // the pending action: { status, needsReason }
+        msg: null,         // a result line to show once
+        err: null,
+        busy: false,
+        refocus: false     // put the caret back in search after a re-render
+      };
+    }
+    return state.admin;
+  }
+
+  function adminQuery() {
+    var a = adminState();
+    var q = ['perPage=50', 'page=' + a.page];
+    if (a.q) q.push('q=' + encodeURIComponent(a.q));
+    if (a.status) q.push('status=' + encodeURIComponent(a.status));
+    return '?' + q.join('&');
+  }
+
+  function loadAdminUsers(keepFocus) {
+    var a = adminState();
+    a.busy = true; a.err = null;
+    // The flag has to survive BOTH renders: the one that shows the loading
+    // state and the one that paints the results. Setting it once means the
+    // caret is restored, then lost again when the fetch lands.
+    a.refocus = !!keepFocus;
+    render();
+    return api('/api/admin/users' + adminQuery())
+      .then(function (r) {
+        a.list = r; a.busy = false; a.refocus = !!keepFocus; render();
+      })
+      .catch(function (e) {
+        a.busy = false; a.err = e.message; a.refocus = !!keepFocus; render();
+      });
+  }
+
+  function loadAdminUser(id) {
+    var a = adminState();
+    a.sel = id; a.detail = null; a.act = null; a.busy = true; a.err = null;
+    render();
+    return api('/api/admin/users/' + encodeURIComponent(id))
+      .then(function (r) { a.detail = r; a.busy = false; render(); })
+      .catch(function (e) { a.busy = false; a.err = e.message; render(); });
+  }
+
+  function loadAudit() {
+    var a = adminState();
+    a.busy = true; a.err = null;
+    render();
+    return api('/api/admin/audit?perPage=60')
+      .then(function (r) { a.audit = r; a.busy = false; render(); })
+      .catch(function (e) { a.busy = false; a.err = e.message; render(); });
+  }
+
+  function applyStatus(id, status, reason, note, until) {
+    var a = adminState();
+    a.busy = true; a.err = null; a.msg = null;
+    render();
+    return api('/api/admin/users/' + encodeURIComponent(id) + '/status', {
+      method: 'PATCH',
+      body: { status: status, reason: reason || undefined, note: note || undefined, until: until || undefined }
+    }).then(function (r) {
+      a.busy = false; a.act = null; a.msg = r && r.message;
+      return Promise.all([loadAdminUser(id), loadAdminUsers()]);
+    }).catch(function (e) {
+      a.busy = false; a.err = e.message; render();
+    });
+  }
+
+  /* ── pieces ─────────────────────────────────────────────────── */
+
+  function statusPill(s) {
+    var k = STATUS_KIND[s] || 'off';
+    return '<span class="pill ' + k + '">' + esc(STATUS_LABEL[s] || s || '—') + '</span>';
+  }
+
+  function dmy(v) {
+    if (!has(v)) return '—';
+    var d = new Date(v);
+    return isFinite(d.getTime()) ? d.toLocaleDateString('en-GB') : '—';
+  }
+  function dmyTime(v) {
+    if (!has(v)) return '—';
+    var d = new Date(v);
+    if (!isFinite(d.getTime())) return '—';
+    return d.toLocaleDateString('en-GB') + ' ' +
+      String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function adminTabs() {
+    var a = adminState();
+    return '<div class="seg-toggle adm-seg">' +
+      [['users', 'Users'], ['audit', 'Audit log']].map(function (t) {
+        return '<button type="button" data-adm-sub="' + t[0] + '"' +
+          (a.sub === t[0] ? ' class="on"' : '') + '>' + t[1] + '</button>';
+      }).join('') + '</div>';
+  }
+
+  function adminFilters() {
+    var a = adminState();
+    var chips = [['LIVE', 'Live'], ['ACTIVE', 'Active'], ['SUSPENDED', 'Suspended'],
+                 ['BLOCKED', 'Blocked'], ['DELETED', 'Deleted'], ['ALL', 'All']];
+    return '<div class="adm-bar">' +
+      '<input class="adm-search" id="admSearch" type="search" autocomplete="off" ' +
+        'placeholder="Search name, email or FPL team" value="' + esc(a.q) + '">' +
+      '<div class="adm-chips">' + chips.map(function (c) {
+        return '<button type="button" data-adm-status="' + c[0] + '"' +
+          (a.status === c[0] ? ' class="on"' : '') + '>' + c[1] + '</button>';
+      }).join('') + '</div></div>';
+  }
+
+  function adminUserRows() {
+    var a = adminState();
+    var rows = (a.list && a.list.rows) || [];
+    if (!rows.length) {
+      return '<tr><td colspan="5"><span class="sub">' +
+        (a.q ? 'Nobody matches "' + esc(a.q) + '".' : 'No accounts in this view.') +
+        '</span></td></tr>';
+    }
+    return rows.map(function (u) {
+      var pro = u.proUntil && new Date(u.proUntil).getTime() > Date.now();
+      return '<tr class="adm-row' + (a.sel === u.id ? ' on' : '') + '" data-adm-user="' + esc(u.id) + '">' +
+        '<td><span class="nm">' + esc(u.displayName || '—') +
+          (u.role === 'ADMIN' ? ' <span class="pill sm">Admin</span>' : '') + '</span>' +
+          '<span class="sub">' + esc(u.email || '') + '</span></td>' +
+        '<td>' + statusPill(u.status) + '</td>' +
+        '<td><span class="nm">' + esc(u.fplTeamName || '—') + '</span>' +
+          '<span class="sub">' + (has(u.fplTeamId) ? 'ID ' + esc(u.fplTeamId) : 'not linked') + '</span></td>' +
+        '<td class="r"><span class="v num">' + n(u._count && u._count.entries, 0) + '</span></td>' +
+        '<td class="r"><span class="v q">' + (pro ? 'Pro' : '—') + '</span></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  /* The action panel. Shown only once an admin has picked what they want to
+     do, so the destructive buttons are never one stray click from happening. */
+  function adminActionPanel() {
+    var a = adminState();
+    var d = a.detail && a.detail.user;
+    if (!d || !a.act) return '';
+
+    var verb = {
+      SUSPENDED: 'Suspend', BLOCKED: 'Block', DELETED: 'Delete', ACTIVE: 'Reactivate'
+    }[a.act.status];
+
+    var says = {
+      SUSPENDED: 'They cannot sign in until this is lifted. Their league results and standings are untouched.',
+      BLOCKED: 'They cannot sign in, permanently, and that email cannot register again. Results are untouched.',
+      DELETED: 'The account stops working and shows as "Former manager" everywhere. Results are untouched. ' +
+               'Identifying details are removed after 30 days, and this can be undone until then.',
+      ACTIVE: 'They can sign in again, and their name goes back to normal.'
+    }[a.act.status];
+
+    var needsReason = a.act.status !== 'ACTIVE';
+
+    return '<div class="adm-act' + (a.act.status === 'ACTIVE' ? ' good' : ' danger') + '">' +
+      lbl(verb + ' ' + (d.priorDisplayName || d.displayName)) +
+      '<p>' + esc(says) + '</p>' +
+      (needsReason
+        ? '<label class="adm-f"><span>Reason, shown to them</span>' +
+          '<input id="admReason" type="text" maxlength="200" placeholder="Why this is happening"></label>' +
+          '<label class="adm-f"><span>Private note, never shown</span>' +
+          '<input id="admNote" type="text" maxlength="400" placeholder="Optional"></label>'
+        : '') +
+      (a.act.status === 'SUSPENDED'
+        ? '<label class="adm-f"><span>Lift automatically on</span>' +
+          '<input id="admUntil" type="date"></label>'
+        : '') +
+      '<div class="adm-btns">' +
+      '<button type="button" class="btn btn-main sm" data-adm-go="' + a.act.status + '"' +
+        (a.busy ? ' disabled' : '') + '>' + esc(a.busy ? 'Working' : verb) + '</button>' +
+      '<button type="button" class="btn btn-ghost sm" data-adm-cancel="1">Cancel</button>' +
+      '</div></div>';
+  }
+
+  function adminDetail() {
+    var a = adminState();
+    if (!a.sel) {
+      return inset('Account', 'Pick an account',
+        'Choose an account to see their competitions, their standing and their history.');
+    }
+    if (!a.detail) return '<div class="adm-detail"><span class="sub">Loading the account.</span></div>';
+
+    var d = a.detail.user, by = a.detail.statusBy;
+    var name = d.priorDisplayName || d.displayName;
+
+    function pair(k, v) {
+      return '<div class="p"><b>' + esc(k) + '</b><span>' + esc(has(v) ? v : '—') + '</span></div>';
+    }
+
+    var out = '<div class="adm-detail">';
+    out += '<div class="adm-head"><div><h4>' + esc(name) + '</h4>' +
+      '<span class="sub">' + esc(d.email || '') + '</span></div>' + statusPill(d.status) + '</div>';
+
+    if (d.status !== 'ACTIVE') {
+      out += '<div class="adm-why">' +
+        '<b>' + esc(STATUS_LABEL[d.status]) + '</b>' +
+        (d.statusReason ? '<span>' + esc(d.statusReason) + '</span>' : '') +
+        '<span class="sub">' + esc(dmyTime(d.statusAt)) +
+          (by ? ' by ' + esc(by.displayName) : '') +
+          (d.suspendedUntil ? ', lifts ' + esc(dmy(d.suspendedUntil)) : '') + '</span>' +
+        (d.statusNote ? '<span class="sub">Note: ' + esc(d.statusNote) + '</span>' : '') +
+        (d.status === 'DELETED' && a.detail.purgeDueAt
+          ? '<span class="sub">Details removed ' + esc(dmy(a.detail.purgeDueAt)) +
+            (a.detail.purgeDue ? ' — due now' : '') + '</span>'
+          : '') +
+        '</div>';
+    }
+
+    out += '<div class="pairs">' +
+      pair('Role', d.role === 'ADMIN' ? 'Admin' : 'Player') +
+      pair('FPL team', d.fplTeamName) +
+      pair('FPL team ID', d.fplTeamId) +
+      pair('Season points', n(d.totalPoints, 0)) +
+      pair('Rank on Clashd', ordinal(d.platformRank)) +
+      pair('Analysis', d.proUntil && new Date(d.proUntil).getTime() > Date.now()
+        ? (d.proSource === 'PREVIEW' ? 'Preview' : 'Paid, to ' + dmy(d.proUntil)) : 'No') +
+      pair('Joined', dmy(d.createdAt)) +
+      '</div>';
+
+    /* actions */
+    if (a.msg) out += '<div class="adm-msg">' + esc(a.msg) + '</div>';
+    if (a.err) out += '<div class="adm-msg bad">' + esc(a.err) + '</div>';
+
+    if (a.act) {
+      out += adminActionPanel();
+    } else if (d.role === 'ADMIN') {
+      out += '<div class="adm-msg">This account is an admin. Remove admin access before changing its standing.</div>';
+    } else {
+      var btns = [];
+      if (d.status === 'ACTIVE') {
+        btns.push(['SUSPENDED', 'Suspend']);
+        btns.push(['BLOCKED', 'Block']);
+        btns.push(['DELETED', 'Delete']);
+      } else {
+        btns.push(['ACTIVE', 'Reactivate']);
+        if (d.status === 'SUSPENDED') btns.push(['BLOCKED', 'Block']);
+        if (d.status !== 'DELETED') btns.push(['DELETED', 'Delete']);
+      }
+      out += '<div class="adm-btns">' + btns.map(function (b) {
+        return '<button type="button" class="btn ' +
+          (b[0] === 'ACTIVE' ? 'btn-main' : 'btn-ghost') + ' sm" data-adm-pick="' + b[0] + '">' +
+          b[1] + '</button>';
+      }).join('') + '</div>';
+    }
+
+    /* their competitions */
+    var ents = d.entries || [];
+    if (ents.length) {
+      out += '<div class="adm-sub">' + lbl('Competitions') +
+        table([{ t: 'League' }, { t: 'Points', r: true }, { t: 'Rank', r: true }],
+          ents.map(function (e) {
+            return '<tr><td><span class="nm">' + esc(e.league ? e.league.name : '—') + '</span>' +
+              '<span class="sub">' + esc(e.league ? e.league.status : '') + '</span></td>' +
+              '<td class="r"><span class="v num">' + n(e.totalPoints, 0) + '</span></td>' +
+              '<td class="r"><span class="v q">' + ordinal(e.currentRank) + '</span></td></tr>';
+          }).join('')) + '</div>';
+    }
+
+    /* what has been done to them */
+    var hist = a.detail.history || [];
+    if (hist.length) {
+      out += '<div class="adm-sub">' + lbl('History') +
+        '<ul class="adm-hist">' + hist.map(function (h) {
+          return '<li><b>' + esc(h.action) + '</b>' +
+            '<span>' + esc(dmyTime(h.createdAt)) + ', ' + esc(h.actorName || 'unknown') + '</span>' +
+            (h.reason ? '<span class="sub">' + esc(h.reason) + '</span>' : '') + '</li>';
+        }).join('') + '</ul></div>';
+    }
+
+    out += '</div>';
+    return out;
+  }
+
+  function adminAuditBody() {
+    var a = adminState();
+    if (!a.audit) return '<div class="adm-detail"><span class="sub">Loading the log.</span></div>';
+    var rows = a.audit.rows || [];
+    if (!rows.length) return empty('Nothing has been done yet. Every admin action lands here.');
+    return sec('Every admin action, newest first', table(
+      [{ t: 'Action' }, { t: 'Who' }, { t: 'What' }, { t: 'When', r: true }],
+      rows.map(function (h) {
+        return '<tr><td><span class="nm">' + esc(h.action) + '</span>' +
+          (h.reason ? '<span class="sub">' + esc(h.reason) + '</span>' : '') + '</td>' +
+          '<td><span class="nm">' + esc(h.actorName || 'unknown') + '</span>' +
+          '<span class="sub">' + esc(h.actorEmail || '') + '</span></td>' +
+          '<td><span class="nm">' + esc(h.targetLabel || '—') + '</span>' +
+          '<span class="sub">' + esc(h.targetType || '') + '</span></td>' +
+          '<td class="r"><span class="v q">' + esc(dmyTime(h.createdAt)) + '</span></td></tr>';
+      }).join('')), a.audit.total ? esc(a.audit.total) + ' recorded' : '');
+  }
+
+  function viewAdmin() {
+    var a = adminState();
+    var st = state.d.adminStats || {};
+
+    var band = bandTop('Admin', 'Accounts and actions',
+      'Everything on this page is recorded in the audit log.', false);
+    band += bandFigs([
+      { v: n(st.users), k: 'Accounts' },
+      { v: n(st.status && st.status.SUSPENDED, 0), k: 'Suspended' },
+      { v: n(st.status && st.status.BLOCKED, 0), k: 'Blocked' },
+      { v: n(st.linked), k: 'FPL linked' }
+    ]);
+
+    var body = adminTabs();
+
+    if (a.sub === 'audit') {
+      body += adminAuditBody();
+      return { band: band, body: body, title: 'Admin' };
+    }
+
+    body += adminFilters();
+    if (a.err && !a.sel) body += '<div class="adm-msg bad">' + esc(a.err) + '</div>';
+
+    var count = a.list ? (a.list.total + (a.list.pages > 1 ? ', page ' + a.list.page + ' of ' + a.list.pages : '')) : '';
+
+    body += '<div class="adm-split">' +
+      '<div class="adm-list">' +
+        sec(a.busy && !a.list ? 'Loading accounts' : 'Accounts',
+          table([{ t: 'Manager' }, { t: 'Standing', w: '110px' }, { t: 'FPL team' },
+                 { t: 'Leagues', r: true, w: '78px' }, { t: 'Analysis', r: true, w: '84px' }],
+                adminUserRows()),
+          count) +
+        (a.list && a.list.pages > 1
+          ? '<div class="adm-btns">' +
+            '<button type="button" class="btn btn-ghost sm" data-adm-page="' + (a.page - 1) + '"' +
+              (a.page <= 1 ? ' disabled' : '') + '>Previous</button>' +
+            '<button type="button" class="btn btn-ghost sm" data-adm-page="' + (a.page + 1) + '"' +
+              (a.page >= a.list.pages ? ' disabled' : '') + '>Next</button></div>'
+          : '') +
+      '</div>' +
+      '<div class="adm-pane">' + adminDetail() + '</div>' +
+      '</div>';
+
+    return { band: band, body: body, title: 'Admin' };
+  }
+
+  /* One delegated handler for the whole page, attached once. The views are
+     re-rendered as innerHTML, so per-element listeners would be lost on every
+     render and re-attaching them is how double-firing bugs start. */
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (!t || !t.closest) return;
+
+    var sub = t.closest('[data-adm-sub]');
+    if (sub) {
+      var a1 = adminState();
+      a1.sub = sub.getAttribute('data-adm-sub');
+      if (a1.sub === 'audit' && !a1.audit) loadAudit(); else render();
+      return;
+    }
+
+    var chip = t.closest('[data-adm-status]');
+    if (chip) {
+      var a2 = adminState();
+      a2.status = chip.getAttribute('data-adm-status');
+      a2.page = 1; a2.sel = null; a2.detail = null;
+      loadAdminUsers();
+      return;
+    }
+
+    var pg = t.closest('[data-adm-page]');
+    if (pg && !pg.disabled) {
+      var a3 = adminState();
+      a3.page = Math.max(1, parseInt(pg.getAttribute('data-adm-page'), 10) || 1);
+      loadAdminUsers();
+      return;
+    }
+
+    var pick = t.closest('[data-adm-pick]');
+    if (pick) {
+      var a4 = adminState();
+      a4.act = { status: pick.getAttribute('data-adm-pick') };
+      a4.msg = null; a4.err = null;
+      render();
+      return;
+    }
+
+    if (t.closest('[data-adm-cancel]')) {
+      var a5 = adminState();
+      a5.act = null; a5.err = null;
+      render();
+      return;
+    }
+
+    var go = t.closest('[data-adm-go]');
+    if (go && !go.disabled) {
+      var a6 = adminState();
+      var want = go.getAttribute('data-adm-go');
+      var reason = $('admReason') ? $('admReason').value.trim() : '';
+      var note = $('admNote') ? $('admNote').value.trim() : '';
+      var until = $('admUntil') ? $('admUntil').value : '';
+      if (want !== 'ACTIVE' && reason.length < 3) {
+        a6.err = 'Give a reason. It is shown to them and recorded in the log.';
+        render();
+        return;
+      }
+      applyStatus(a6.sel, want, reason, note, until ? new Date(until).toISOString() : '');
+      return;
+    }
+
+    var row = t.closest('[data-adm-user]');
+    if (row) { loadAdminUser(row.getAttribute('data-adm-user')); return; }
+  });
+
+  /* Search, debounced. Typing must not fire a request per keystroke, and the
+     caret has to survive the re-render that follows. */
+  var admTimer = null;
+  document.addEventListener('input', function (ev) {
+    if (!ev.target || ev.target.id !== 'admSearch') return;
+    var a = adminState();
+    a.q = ev.target.value;
+    a.page = 1;
+    if (admTimer) clearTimeout(admTimer);
+    admTimer = setTimeout(function () { loadAdminUsers(true); }, 350);
+  });
+
   /* ── render ──────────────────────────────────────────────────── */
   function render() {
     var v;
@@ -1004,6 +1460,7 @@
     else if (state.view === 'analysis') v = viewAnalysis();
     else if (state.view === 'news') v = viewNews();
     else if (state.view === 'profile') v = viewProfile();
+    else if (state.view === 'admin') v = isAdmin() ? viewAdmin() : viewHome();
     else v = viewHome();
 
     document.title = state.loading ? 'Clashd' : 'Clashd — ' + v.title;
@@ -1019,6 +1476,15 @@
     Array.prototype.forEach.call(document.querySelectorAll('.rail nav a'), function (a) {
       a.classList.toggle('on', a.getAttribute('data-view') === state.view);
     });
+
+    var admLink = document.querySelector('.rail nav a[data-view="admin"]');
+    if (admLink) admLink.classList.toggle('hide', !isAdmin());
+
+    if (state.admin && state.admin.refocus) {
+      state.admin.refocus = false;
+      var sf = $('admSearch');
+      if (sf) { sf.focus(); sf.setSelectionRange(sf.value.length, sf.value.length); }
+    }
     Array.prototype.forEach.call(document.querySelectorAll('.seg-toggle button'), function (b) {
       b.addEventListener('click', function () { state.mode = b.getAttribute('data-mode'); render(); });
     });
@@ -1030,6 +1496,11 @@
     state.view = VIEWS.indexOf(h) >= 0 ? h : 'home';
     if (state.view === 'analysis' && state.d.analysis && state.d.analysis.defaultMode === 'plan') state.mode = 'ahead';
     $('shell').classList.remove('open');
+    if (state.view === 'admin' && isAdmin() && state.admin && !state.admin.list && !state.admin.busy) {
+      loadAdminUsers();
+      return;
+    }
+    if (state.view === 'admin' && isAdmin() && !state.admin) { loadAdminUsers(); return; }
     if (!$('shell').classList.contains('hide')) render();
   }
   window.addEventListener('hashchange', route);

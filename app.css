@@ -590,3 +590,133 @@ img{max-width:100%}
 .said .sub{font-size:13.5px;color:var(--mute);margin-top:5px;max-width:66ch}
 
 .scale-note{font-size:12.5px;color:var(--faint);margin-top:10px}
+
+/* ══ admin ═══════════════════════════════════════════════════════════════
+   Dense on purpose. An admin screen is a working tool, not a brochure: the
+   list has to show enough rows to scan without scrolling, and the detail pane
+   has to sit beside it so choosing somebody does not lose the list.
+   Nothing here is decorative — every mark on the page is either a control or
+   a fact about an account.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Tabs. The existing .seg-toggle lives on the turf band; this is its paper
+   twin, for use inside the sheet. */
+.adm-seg{display:inline-flex;background:var(--wash);border:1.5px solid var(--rule);
+  border-radius:6px;padding:3px;gap:2px;margin:0 0 20px}
+.adm-seg button{border:none;background:none;padding:8px 16px;border-radius:4px;
+  font-family:inherit;font-size:14px;font-weight:600;color:var(--mute);cursor:pointer}
+.adm-seg button.on{background:var(--paper);color:var(--ink);font-weight:700;
+  box-shadow:0 1px 2px rgba(13,23,16,.10)}
+
+/* Search and status filters. */
+.adm-bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:16px}
+.adm-search{flex:1 1 280px;min-width:220px;height:42px;padding:0 13px;
+  border:1.5px solid var(--rule);border-radius:6px;background:var(--paper);
+  font-family:inherit;font-size:15px;color:var(--ink)}
+.adm-search::placeholder{color:var(--faint)}
+.adm-search:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(14,122,60,.13)}
+.adm-chips{display:flex;flex-wrap:wrap;gap:6px}
+.adm-chips button{border:1.5px solid var(--rule);background:var(--paper);color:var(--mute);
+  padding:7px 12px;border-radius:14px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.adm-chips button:hover{border-color:var(--green);color:var(--green)}
+.adm-chips button.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* List beside detail. */
+.adm-split{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+  gap:clamp(20px,2.6vw,36px);align-items:start}
+.adm-list .tbl td{padding:9px 0}
+.adm-row{cursor:pointer}
+.adm-row:hover td{background:var(--wash)}
+.adm-row.on td{background:#F1F7F3}
+/* The marker belongs on the row's leading edge, not on every cell. */
+.adm-row.on td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+
+/* Standing. Colour carries meaning here, so the word carries it too — the
+   pill is never the only signal. */
+.pill{display:inline-block;padding:3px 9px;border-radius:11px;font-size:12px;
+  font-weight:700;letter-spacing:.2px;border:1.5px solid transparent;white-space:nowrap}
+.pill.ok{background:#E8F3EC;color:#0B6231;border-color:#BFDFCC}
+.pill.warn{background:#FBF4E2;color:#7A5B00;border-color:#EBDCA8}
+.pill.bad{background:#FBEEED;color:#8A2A22;border-color:#EBC5C1}
+.pill.off{background:var(--wash);color:var(--faint);border-color:var(--rule)}
+.pill.sm{font-size:10.5px;padding:1px 6px;vertical-align:1px;
+  background:var(--wash);color:var(--mute);border-color:var(--rule)}
+
+/* The detail pane. */
+.adm-pane{position:sticky;top:24px}
+.adm-detail{border:1.5px solid var(--rule);border-radius:8px;background:var(--paper);padding:18px}
+.adm-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;
+  border-bottom:1.5px solid var(--ink);padding-bottom:12px;margin-bottom:4px}
+.adm-head h4{font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:800;
+  line-height:1.1;letter-spacing:-.1px}
+.adm-head .sub{display:block;font-size:13px;color:var(--faint);margin-top:2px}
+
+/* Why an account is not active. Reads as a record, not an alert. */
+.adm-why{border-left:3px solid var(--gold);background:#FBF9F2;padding:11px 13px;margin:14px 0}
+.adm-why b{display:block;font-size:13px;font-weight:700;letter-spacing:.2px}
+.adm-why span{display:block;font-size:13.5px;color:var(--mute);margin-top:3px;line-height:1.45}
+.adm-why .sub{font-size:12.5px;color:var(--faint)}
+
+.adm-msg{margin:14px 0;border-left:3px solid var(--green);background:#F1F7F3;
+  padding:10px 13px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.adm-msg.bad{border-left-color:var(--red);background:#FBEEED;color:#7A231C}
+
+/* The action panel. Deliberately bordered and titled: it is a different mode,
+   and it should not read as part of the account record above it. */
+.adm-act{margin:16px 0 4px;padding:14px;border-radius:8px;border:1.5px solid var(--rule);
+  background:var(--wash)}
+.adm-act.danger{border-color:#EBC5C1;background:#FDF6F5}
+.adm-act.good{border-color:#BFDFCC;background:#F3F9F5}
+.adm-act p{font-size:13.5px;color:var(--mute);line-height:1.55;margin:7px 0 13px}
+.adm-f{display:block;margin-bottom:11px}
+.adm-f span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.4px;
+  text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.adm-f input{width:100%;height:40px;padding:0 12px;border:1.5px solid var(--rule);
+  border-radius:6px;background:var(--paper);font-family:inherit;font-size:14.5px;color:var(--ink)}
+.adm-f input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(14,122,60,.13)}
+
+/* Buttons sit in a row here, so the full-width defaults are overridden. */
+.adm-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.adm-btns .btn{width:auto;min-height:0;margin-top:0}
+.btn.sm{padding:9px 15px;font-size:14px;min-height:0;width:auto}
+.adm-btns .btn-ghost{cursor:pointer;color:var(--ink);background:var(--paper)}
+.adm-btns .btn-ghost:hover{border-color:var(--green);color:var(--green)}
+.adm-btns .btn-ghost[disabled]{cursor:default;opacity:.5;color:var(--faint)}
+
+.adm-sub{margin-top:20px;padding-top:14px;border-top:1px solid var(--rule)}
+.adm-sub .tbl td{padding:7px 0;font-size:14px}
+
+.adm-hist{list-style:none;margin-top:8px}
+.adm-hist li{padding:8px 0;border-bottom:1px solid var(--rule-2)}
+.adm-hist li:last-child{border-bottom:none}
+.adm-hist b{font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--ink)}
+.adm-hist span{display:block;font-size:12.5px;color:var(--faint);margin-top:2px}
+.adm-hist .sub{color:var(--mute)}
+
+/* Columns need air between them; the base table is built for wider cells. */
+.adm-list .tbl th,.adm-list .tbl td{padding-right:14px}
+.adm-list .tbl th:last-child,.adm-list .tbl td:last-child{padding-right:8px}
+
+@media (max-width:1080px){
+  .adm-split{grid-template-columns:minmax(0,1fr)}
+  .adm-pane{position:static}
+}
+
+/* On a phone, five columns is not a dense table, it is an unreadable one.
+   FPL team and Analysis are dropped: who they are, their standing and how many
+   competitions they are in is what an admin scans for. The full picture is one
+   tap away in the detail pane. */
+@media (max-width:760px){
+  .adm-list .tbl th:nth-child(3),.adm-list .tbl td:nth-child(3),
+  .adm-list .tbl th:nth-child(5),.adm-list .tbl td:nth-child(5){display:none}
+  .adm-list .tbl .nm{font-size:14.5px}
+  .adm-bar{gap:10px}
+  .adm-search{flex:1 1 100%}
+}
+
+@media (max-width:620px){
+  /* The league tables drop their sub-lines on a phone, where they are
+     secondary detail. Here the email is the thing that tells two accounts
+     apart, so it stays whatever the width. */
+  .adm-list .tbl .sub{display:block}
+}
