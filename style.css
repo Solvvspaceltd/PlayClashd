@@ -188,6 +188,35 @@ section.tint,section.on-white{background:var(--tint)}
   padding:10px 4px 14px;font-size:10px;color:var(--dimmer)}
 .ph-tabs .on{color:var(--green);font-weight:700}
 
+/* ---------- the club band ---------- */
+/* A slow rail of our own kit cards under the hero. Each card carries a right
+   margin rather than the track carrying a gap, so the two identical halves
+   line up exactly and the loop has no seam. */
+.clubband{background:var(--turf);padding:28px 0 32px;overflow:hidden}
+.clubband-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding-bottom:18px}
+.clubband-head b{font-family:"Barlow Condensed",sans-serif;font-size:19px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;color:var(--bright)}
+.clubband-head span{font-size:14px;color:var(--on-dark-2)}
+.clubband-rail{overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.clubband-track{display:flex;width:max-content;animation:clubrail 72s linear infinite}
+.clubband-track img{flex:0 0 auto;width:208px;height:auto;display:block;margin-right:14px;
+  border-radius:10px;border:1px solid rgba(255,255,255,.1)}
+.clubband:hover .clubband-track,.clubband:focus-within .clubband-track{animation-play-state:paused}
+@keyframes clubrail{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+@media (max-width:760px){
+  .clubband-track img{width:158px;margin-right:10px}
+  .clubband-head{padding-bottom:14px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  /* Still browsable, just not moving on its own. */
+  .clubband-rail{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
+  .clubband-track{animation:none}
+}
+
 /* ---------- facts strip ---------- */
 .facts{background:#fff;border-bottom:1px solid var(--line)}
 .facts .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
@@ -197,6 +226,42 @@ section.tint,section.on-white{background:var(--tint)}
   color:var(--green);margin-right:8px}
 .facts b{font-family:"Barlow Condensed",sans-serif;font-size:18px;text-transform:uppercase;letter-spacing:.4px}
 .facts span{display:block;font-size:13.5px;color:var(--dim);margin-top:4px}
+
+/* The strip runs as a stories rail: one fact leads, a bar fills across the top
+   of it, then it hands over. Everything here is cosmetic - with JavaScript off,
+   or reduced motion asked for, all four read exactly as they did before. */
+.facts .fact{position:relative;transition:background .45s ease}
+.facts .fact strong,.facts .fact b,.facts .fact span{transition:color .45s ease,opacity .45s ease}
+.facts .bar{position:absolute;left:0;right:0;top:0;height:3px;overflow:hidden;
+  background:transparent;pointer-events:none}
+.facts .bar i{display:block;height:3px;width:0;background:var(--green);border-radius:0 2px 2px 0}
+.facts .fact.on{background:#f3f8f5}
+.facts .fact.on .bar{background:rgba(14,122,60,.12)}
+/* Only dim the others once the rail is actually running, so a page with no
+   JavaScript keeps all four at full strength. */
+.facts.running .fact:not(.on) strong{color:#9eb0a6}
+.facts.running .fact:not(.on) span{opacity:.62}
+
+.facts-nav{display:none}
+.facts-dots{display:flex;gap:7px;padding-bottom:16px}
+.fdot{width:26px;height:4px;border:0;padding:0;border-radius:2px;background:var(--line);
+  cursor:pointer;transition:background .3s ease}
+.fdot.on{background:var(--green)}
+
+@media (max-width:760px){
+  /* A real carousel on a phone: one at a time, with the dots to move between. */
+  .facts .wrap{grid-template-columns:1fr}
+  .facts .fact{border-left:none;padding-left:0}
+  .facts:not(.static) .fact{display:none}
+  .facts:not(.static) .fact.on{display:block}
+  .facts-nav{display:block}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .facts .bar{display:none}
+  .facts .fact.on{background:transparent}
+  .facts-nav{display:none}
+}
 
 /* ---------- 01 league table, wide, with the season beside it ---------- */
 .ltable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);
