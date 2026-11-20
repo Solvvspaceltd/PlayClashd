@@ -394,6 +394,10 @@
       case 'TRANSFER_NET':   return 'net on transfers';
       case 'SEVEN_ASIDE':
       case 'FIVE_ASIDE':     return 'aside points';
+      case 'GOLDEN_GLOVE':   return 'keeper points';
+      case 'PARKED_BUS':     return 'defender points';
+      case 'MIDFIELD_MASTER':return 'midfield points';
+      case 'ELECTRIC_ATTACKER': return 'forward points';
       default:               return 'season points';
     }
   }
@@ -485,10 +489,10 @@
         '<div class="two"><div>' +
         '<h3>Your lot already have a league. Give it a season.</h3>' +
         '<p>Import your FPL mini-league and everyone in it gets a table, fixtures, promotion, ' +
-        'relegation and eight other ways to take the mick \u2014 off one code, with nobody ' +
+        'relegation and four other ways to take the mick \u2014 off one code, with nobody ' +
         're-entering anything.</p>' +
-        '<p class="note">Importing happens in the app. Free for the first two gameweeks, then one ' +
-        'Club pass keeps it running for the season.</p>' +
+        '<p class="note">Importing opens in August 2027. Your group will get five of our ' +
+        'fourteen competitions, scored privately among you.</p>' +
         '</div><div>' +
         inset('Club pass', 'One payment, the whole league',
           'Bought once by anyone in the league, not per person. Priced by how many managers ' +
@@ -1150,7 +1154,9 @@
         '</span></td></tr>';
     }
     return rows.map(function (u) {
-      var pro = u.proUntil && new Date(u.proUntil).getTime() > Date.now();
+      // A comp has no end date, so an expiry test alone reports every comped
+      // tester as having nothing.
+      var pro = u.comped || (u.proUntil && new Date(u.proUntil).getTime() > Date.now());
       return '<tr class="adm-row' + (a.sel === u.id ? ' on' : '') + '" data-adm-user="' + esc(u.id) + '">' +
         '<td><span class="nm">' + esc(u.displayName || '—') +
           (u.role === 'ADMIN' ? ' <span class="pill sm">Admin</span>' : '') + '</span>' +

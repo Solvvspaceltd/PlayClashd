@@ -20,7 +20,7 @@
       <span class="word">Clash<b>d</b></span>
     </a>
     <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
-    <nav id="site-nav"><a href="/how-it-works/">How it works</a><a href="/competitions/">Competitions</a><a href="/analysis/">Analysis</a><a href="/import/">Mini-leagues</a><a class="signin-link" href="/app/">Sign in</a><span class="soon">App coming soon</span></nav>
+    <nav id="site-nav"><a href="/how-it-works/">How it works</a><a href="/competitions/">Competitions</a><a href="/analysis/">Analysis</a><a href="/import/">Mini-leagues</a><a class="signin-link" href="/app/">Sign in</a><span class="soon">App opens 24 December</span></nav>
   </div>
 </header>
 <section class="hero hero-photo hero-tiles">
@@ -28,7 +28,7 @@
     <div class="hero-copy">
       <h1>Competitive<br>Fantasy Football.</h1>
       <p>A fixture every gameweek against a manager who wants to beat you. A division you can climb
-        or fall out of. Eight more competitions off the same squad.</p>
+        or fall out of. Thirteen more competitions off the same squad.</p>
       <ol class="steps3">
         <li><b>Link your FPL</b><span>Your public Team ID. No password.</span></li>
         <li><b>Take your place</b><span>A division and a fixture list, waiting.</span></li>
@@ -136,10 +136,10 @@
 
 <div class="facts" id="facts" aria-label="Clashd at a glance">
   <div class="wrap">
-    <div class="fact" data-to="9"><div class="bar"><i></i></div><strong>9</strong><b>Competitions</b><span>One squad, nine ways to win</span></div>
-    <div class="fact" data-to="3"><div class="bar"><i></i></div><strong>3</strong><b>Points a week</b><span>A head-to-head every gameweek</span></div>
+    <div class="fact" data-to="14"><div class="bar"><i></i></div><strong>14</strong><b>Competitions</b><span>One squad, fourteen ways to win</span></div>
+    <div class="fact" data-to="500" data-prefix="£"><div class="bar"><i></i></div><strong>&pound;500</strong><b>To the champion</b><span>Clashd Premier League, funded by us</span></div>
+    <div class="fact"><div class="bar"><i></i></div><strong>&pound;0</strong><b>To enter</b><span>No entry fee, no purchase. 18+</span></div>
     <div class="fact"><div class="bar"><i></i></div><strong>2 up</strong><b>2 down</b><span>Promotion and relegation each cycle</span></div>
-    <div class="fact"><div class="bar"><i></i></div><strong>&pound;0</strong><b>To enter</b><span>Prizes funded by Clashd. 18+</span></div>
   </div>
   <div class="facts-nav"><div class="wrap"><div class="facts-dots"></div></div></div>
 </div>
@@ -468,7 +468,7 @@
         b.style.transition = 'width ' + DWELL + 'ms linear';
         b.style.width = '100%';
         var to = parseInt(f.getAttribute('data-to'), 10);
-        if (to) countUp(f.querySelector('strong'), to);
+        if (to) countUp(f.querySelector('strong'), to, f.getAttribute('data-prefix') || '');
       }
     });
     buttons.forEach(function(b, n){
@@ -477,13 +477,16 @@
     });
   }
 
-  function countUp(el, to){
+  // The prefix matters: a prize counting up to a bare 500 reads as a score,
+  // not as money. Rendered as a currency entity, so it survives innerHTML.
+  function countUp(el, to, prefix){
     var t0 = null;
-    el.textContent = '0';
+    prefix = prefix || '';
+    el.textContent = prefix + '0';
     function step(ts){
       if (t0 === null) t0 = ts;
       var p = Math.min(1, (ts - t0) / 620);
-      el.textContent = String(Math.round(to * p));
+      el.textContent = prefix + String(Math.round(to * p));
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
